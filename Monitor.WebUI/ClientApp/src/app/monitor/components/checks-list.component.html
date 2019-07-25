@@ -1,0 +1,28 @@
+<div class="container" style="margin-top: 2%; cursor: pointer">
+  <div class="row">
+    <div class="col-sm-1" (click)="orderBy('priority')">
+      {{ 'Приоритет' }}
+    </div>
+    <div class="col-sm-2" (click)="orderBy('service')">
+      {{ 'Сервис' }}
+    </div>
+    <div class="col-sm-1" (click)="orderBy('status')">
+      {{ 'Статус' }}
+    </div>
+    <div class="col-sm-2" (click)="orderBy('lastRun')">
+      {{ 'Последний запуск' }}
+    </div>
+    <div class="col-sm-2" (click)="orderBy('inCurrent')">
+      {{ 'В текущем статусе c' }}
+    </div>
+    <div class="col-sm-3" (click)="orderBy('description')">
+      {{ 'Описание' }}
+    </div>
+    <div class="col-sm-1">
+      {{ 'Действия' }}
+    </div>
+  </div>
+  <div *ngFor="let check of checks$ | async">
+    <check [check]="check" (onManualRun)="runManualCheck($event)"></check>
+  </div>
+</div>
