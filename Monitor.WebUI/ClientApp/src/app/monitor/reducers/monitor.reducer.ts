@@ -9,7 +9,7 @@ export interface State {
   sortOrder: string
 }
 
-export const initialState: State = {
+const initialState: State = {
   checks: [],
   lastSortProperty: '',
   sortOrder: 'ASC'
@@ -63,6 +63,10 @@ export function monitorReducer(state = initialState, action: monitor.Actions): S
       }    
     }
 
+    default: {
+      return state;
+    }
+
   }
 }
 
@@ -110,3 +114,23 @@ function getOrder(check1: Check, check2: Check, propertyName: string): number {
   }
   return (check1[propertyName] > check2[propertyName]) ? 1 : -1;
 }
+
+function convertToEnvironmentId(environment: string): number {
+  switch (environment) {
+    case "prod":
+      return EnvironmentsEnum.Prod;
+    case "beta":
+      return EnvironmentsEnum.Beta;
+    default:
+      return null;
+  }
+} 
+
+export const getProdChecks = (state: State) =>
+  state.checks.filter(x => x.environmentId == EnvironmentsEnum.Prod);
+
+export const getBetaChecks = (state: State) =>
+  state.checks.filter(x => x.environmentId == EnvironmentsEnum.Beta);
+
+export const getChecksForEnvironment = (state: State, environment: string) =>
+  state.checks.filter(x => x.environmentId == convertToEnvironmentId(environment));

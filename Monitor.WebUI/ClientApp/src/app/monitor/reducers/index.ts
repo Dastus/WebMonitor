@@ -19,21 +19,7 @@ export const monitorReducer = {
 export const getMonitorMainState = createFeatureSelector<MonitorState>('monitor');
 
 export const getMonitorState = createSelector(getMonitorMainState, (state: MonitorState) => state.monitor);
-export const getProdChecks = createSelector(getMonitorMainState, (state: MonitorState) =>
-  state.monitor.checks.filter(x => x.environmentId == EnvironmentsEnum.Prod));
-export const getBetaChecks = createSelector(getMonitorMainState, (state: MonitorState) =>
-  state.monitor.checks.filter(x => x.environmentId == EnvironmentsEnum.Beta));
 
-export const getChecksForEnvironment = createSelector(getMonitorMainState, (state: MonitorState, environment: string) =>
-  state.monitor.checks.filter(x => x.environmentId == convertToEnvironmentId(environment)));
-
-function convertToEnvironmentId(environment: string): number {
-  switch (environment) {
-    case "prod":
-      return EnvironmentsEnum.Prod;
-    case "beta":
-      return EnvironmentsEnum.Beta;
-    default:
-      return null;
-  }
-} 
+export const getProdChecks = createSelector(getMonitorState, fromMonitor.getProdChecks);
+export const getBetaChecks = createSelector(getMonitorState, fromMonitor.getBetaChecks);
+export const getChecksForEnvironment = createSelector(getMonitorState, fromMonitor.getChecksForEnvironment);

@@ -1,6 +1,5 @@
 import {
   ActionReducerMap,
-  ActionReducer,
 } from '@ngrx/store';
 
 export interface State {

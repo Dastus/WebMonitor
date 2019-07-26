@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
-import { monitorReducer } from './monitor/reducers/monitor.reducer';
+//import { monitorReducer } from './monitor/reducers/monitor.reducer';
 import { EffectsModule } from '@ngrx/effects';
 
 import { reducers } from './redux-store';
