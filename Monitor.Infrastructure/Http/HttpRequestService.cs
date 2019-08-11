@@ -14,7 +14,7 @@ namespace Monitor.Infrastructure.Http
 {
     public class HttpRequestService : IHttpRequestService
     {
-        public async Task<HtmlDocument> GetHtmlStructure(string url)
+        public async Task<HtmlDocument> GetHtmlStructure(string url, TimeSpan timeout)
         {
             using (var client = new HttpClient())
             {
@@ -28,9 +28,9 @@ namespace Monitor.Infrastructure.Http
             }
         }
 
-        public async Task<WebPageLoadResult> GetPageLoadResult(string url)
+        public async Task<WebPageLoadResult> GetPageLoadResult(string url, TimeSpan timeout)
         {
-            using (var client = new HttpClient())
+            using (var client = new HttpClient { Timeout = timeout })
             {
                 var startTime = DateTime.Now;
                 var resp = await client.GetAsync(url);

@@ -30,7 +30,7 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             var commandResult = result as CommandResult;
             if (commandResult.Success)
             {
-                await _notifier.Notify(new List<Check> { commandResult.CheckModel });
+                await _notifier.Notify(commandResult.CheckModel);
             }
 
             return result;

@@ -1,19 +1,13 @@
-﻿using Microsoft.Extensions.Hosting;
-using Monitor.Application.Interfaces;
-using Monitor.Application.MonitoringChecks;
-using Monitor.Application.MonitoringChecks.Models;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using Monitor.Application.Interfaces;
+using Monitor.Application.MonitoringChecks.Models;
 
 namespace Monitor.Infrastructure.Scheduler
 {
-    //TODO: add tasks cancellation on shutdown
-    public class SchedulerService : IHostedService
+    public class SchedulerService : ISchedulerService
     {
         private IScheduleRepository _scheduleRepository;
         private ICommandsProcessor _processor;
@@ -28,19 +22,12 @@ namespace Monitor.Infrastructure.Scheduler
             _scheduleRepository = scheduleRepository ?? throw new ArgumentNullException(nameof(scheduleRepository));
         }
 
-        public async Task AddToSchedule(CheckTypeEnum checkType, string schedule)
+        public async Task AddToSchedule(Check check)
         {
-            try
-            {
-                var cancellationTokenSource = new CancellationTokenSource();
-                _cancellationTokensMap.TryAdd(checkType, cancellationTokenSource);
-                var checkProcessor = new ScheduledTask(_processor);
-                await checkProcessor.ProcessCheck(checkType, schedule, cancellationTokenSource);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            var cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokensMap.TryAdd(check.Type, cancellationTokenSource);
+            var checkProcessor = new ScheduledTask(_processor);
+            await checkProcessor.ProcessCheck(check.Type, check.Schedule, cancellationTokenSource);
         }
 
         public void RemoveFromSchedule(Check check)
@@ -52,12 +39,7 @@ namespace Monitor.Infrastructure.Scheduler
             }
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await InitializeSchedule();
-        }
-
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAll()
         {
             foreach (var token in _cancellationTokensMap.Values)
             {
@@ -65,13 +47,13 @@ namespace Monitor.Infrastructure.Scheduler
             }
         }
 
-        private async Task InitializeSchedule()
-        {
-            var schedule = await _scheduleRepository.GetSchedule();
+        //private async Task InitializeSchedule()
+        //{
+        //    var schedule = await _scheduleRepository.GetSchedule();
 
-            Parallel.ForEach(schedule.Values , async (x) => {
-                await AddToSchedule(x.CheckType, x.Schedule);
-            });
-        }
+        //    Parallel.ForEach(schedule.Values , async (x) => {
+        //        await AddToSchedule(x.CheckType, x.Schedule);
+        //    });
+        //}
     }
 }

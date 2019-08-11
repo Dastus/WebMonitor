@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using Monitor.Application.MonitoringChecks.Models;
-using Monitor.Application.MonitoringChecks;
 using Monitor.Application.MonitoringChecks.Queries;
+using Monitor.Application.Interfaces;
 
 namespace Monitor.WebUI.Controllers
 {

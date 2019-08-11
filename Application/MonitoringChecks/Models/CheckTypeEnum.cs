@@ -10,6 +10,7 @@ namespace Monitor.Application.MonitoringChecks.Models
         HomePageAvailableBeta = 5,
         MetaTagsBeta = 6,
         WebUISearchBeta = 7,
-        ApiSearchBeta = 8,
+        ApiSearchCheckProd = 8,
+        ApiSearchCheckBeta = 9,
     }
 }

@@ -4,7 +4,6 @@ namespace Monitor.Application.MonitoringChecks.Models
 {
     public class Check
     {
-        public int Id { get; set; }
         public int EnvironmentId { get; set; }
         public string Host {get; set;}
         public DateTime LastCheckTime {get; set;}

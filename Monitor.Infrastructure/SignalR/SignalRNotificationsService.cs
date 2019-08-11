@@ -16,9 +16,9 @@ namespace Monitor.Infrastructure.SignalR
             _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
         }
 
-        public async Task Notify(List<Check> checkResults)
+        public async Task Notify(Check checkResult)
         {
-            await _hubContext.Clients.All.BroadcastChecks(checkResults);
+            await _hubContext.Clients.All.BroadcastChecks(new List<Check> { checkResult });
         }
     }
 }

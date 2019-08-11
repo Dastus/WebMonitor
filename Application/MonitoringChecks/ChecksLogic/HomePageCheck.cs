@@ -35,7 +35,7 @@ namespace Monitor.Application.MonitoringChecks
 
             try
             {
-                var loadResult = await _httpService.GetPageLoadResult(address);
+                var loadResult = await _httpService.GetPageLoadResult(address, TimeSpan.FromSeconds(60));
 
                 if (loadResult.ResponseStatus != HttpStatusCode.OK)
                 {

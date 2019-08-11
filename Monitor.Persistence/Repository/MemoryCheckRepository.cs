@@ -67,7 +67,6 @@ namespace Monitor.Persistence.Repository
             //TODO: implement real DB implementation
             var check1 = new Check
             {
-                Id = 1,
                 Priority = PrioritiesEnum.Critical,
                 Status = StatusesEnum.CRITICAL,
                 Service = "Autodoc site availability",
@@ -77,7 +76,6 @@ namespace Monitor.Persistence.Repository
 
             var check2 = new Check
             {
-                Id = 2,
                 Priority = PrioritiesEnum.Medium,
                 Status = StatusesEnum.CRITICAL,
                 Service = "Meta tags",

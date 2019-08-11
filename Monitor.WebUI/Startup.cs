@@ -8,15 +8,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitor.Application.Interfaces;
-using Monitor.Application.MonitoringChecks;
 using Monitor.Application.MonitoringChecks.CommandHandlers;
 using Monitor.Application.MonitoringChecks.Decorators;
 using Monitor.Infrastructure.Http;
 using Monitor.Infrastructure.Scheduler;
 using Monitor.Infrastructure.Selenium;
 using Monitor.Infrastructure.SignalR;
+using Monitor.Infrastructure.Processors;
 using Monitor.Persistence.Repository;
 using System.Reflection;
+using Monitor.Infrastructure.Registrator;
+using Monitor.Infrastructure.Logger;
+using Monitor.Infrastructure.Telegram;
+using Monitor.Application.MonitoringChecks.ResultsHandlingLogic;
+using Monitor.Infrastructure.Settings;
 
 namespace Monitor.WebUI
 {
@@ -32,17 +37,27 @@ namespace Monitor.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TelegramNotificationSettings>(Configuration.GetSection("TelegramNotificationSettings"));
+
             services.AddTransient<IHttpRequestService, HttpRequestService>();
-            services.AddTransient<ICommandsProcessor, CommandsProcessor>();
+            services.AddTransient<ISignalRNotificationsService, SignalRNotificationsService>();
+            services.AddTransient<ILoggerService, LoggerService>();
+            services.AddTransient<IWebDriversFactory, SeleniumDriversFactory>();
+            services.AddTransient<ITelegramNotificationService, TelegramService>();
+            services.AddTransient<IResultHandlingService, ResultHandlingService>();
+
+            services.AddSingleton<ICommandsProcessor, CommandsProcessor>();
+            services.AddSingleton<ISchedulerService, SchedulerService>();
             services.AddSingleton<IChecksRepository, MemoryCheckRepository>();
             services.AddSingleton<IScheduleRepository, MemoryScheduleRepository>();
-            services.AddTransient<ISignalRNotificationsService, SignalRNotificationsService>();
-            services.AddSingleton<IHostedService, SchedulerService>();
-            services.AddTransient<IWebDriversFactory, SeleniumDriversFactory>();
+            services.AddSingleton<IHostedService, CheckRegistrator>();
 
-            services.AddMediatR(typeof(HomePageCheckHandler).GetTypeInfo().Assembly);            
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandExceptionsDecorator<,>));
+
+            services.AddMediatR(typeof(HomePageCheckHandler).GetTypeInfo().Assembly);
+
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggerDecorator<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandExceptionsDecorator<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandResultHandleDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SignalRDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DataStoreDecorator<,>));
 

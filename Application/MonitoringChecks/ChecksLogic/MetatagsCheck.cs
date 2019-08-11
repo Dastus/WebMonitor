@@ -35,8 +35,12 @@ namespace Monitor.Application.MonitoringChecks
 
             try
             {
-                var htmlResult = await _httpService.GetHtmlStructure(address);
+                var warningThreshold = 3;
                 var errors = new List<string>();
+
+                var startTime = DateTime.Now;
+                var htmlResult = await _httpService.GetHtmlStructure(address, TimeSpan.FromSeconds(60));
+                var endTime = DateTime.Now;
 
                 var title = htmlResult.GetTitle();
 
@@ -80,16 +84,22 @@ namespace Monitor.Application.MonitoringChecks
                     errors.Add("'link' for rel='prev' is present on page 1:" + prevLink);
                 }
 
-                if (errors.Count() == 0)
-                {
-                    result.Status = StatusesEnum.OK;
-                    result.Description = "Проблем не обнаружено";
-                }
-                else
+                if (errors.Count() > 0)
                 {
                     result.Status = StatusesEnum.CRITICAL;
                     result.Description = "Обнаружены следующие проблемы: " + string.Join(",", errors);
+                    return result;                }
+
+                var execTime = endTime - startTime;
+                if (execTime > TimeSpan.FromSeconds(warningThreshold))
+                {
+                    result.Status = StatusesEnum.WARNING;
+                    result.Description = "Время ответа больше порога " + warningThreshold + " сек: " + execTime.Seconds;
+                    return result;
                 }
+
+                result.Status = StatusesEnum.OK;
+                result.Description = "Проблем не обнаружено";
             }
             catch
             {

@@ -1,11 +1,13 @@
 ﻿using Monitor.Application.MonitoringChecks.Models;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Monitor.Application.Interfaces
 {
-    public interface INotificationsService
+    public interface IResultHandlingService
     {
-        Task Notify(Check checkResults);
+        Task HandleResult(CommandResult result);
     }
 }

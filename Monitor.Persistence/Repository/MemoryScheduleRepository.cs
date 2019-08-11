@@ -22,6 +22,7 @@ namespace Monitor.Persistence.Repository
             }
         }
 
+        //Not used now
         public void InitDict()
         {
             //test implementation

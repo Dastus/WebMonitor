@@ -1,9 +1,7 @@
 ﻿using Cronos;
-using Monitor.Application.MonitoringChecks;
+using Monitor.Application.Interfaces;
 using Monitor.Application.MonitoringChecks.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

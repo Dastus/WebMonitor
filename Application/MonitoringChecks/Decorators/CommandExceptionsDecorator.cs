@@ -23,7 +23,10 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             }
             catch(Exception ex)
             {
-                return new CommandResult { Success = false, Errors = new List<string> { ex.Message } } as TOut;
+                return new CommandResult {
+                    Success = false,
+                    Errors = new List<string> { ex.Message }
+                } as TOut;
             }
         }
     }
