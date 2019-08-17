@@ -6,5 +6,12 @@ namespace Monitor.Application.MonitoringChecks.Commands
 {
     public class HomePageCheckBetaCommand : IRequest<CommandResult>, ICommand<CommandResult>
     {
+        public CheckSettings CheckSettings => new CheckSettings
+        {
+            Priority = PrioritiesEnum.Critical,
+            Service = "Autodoc beta site availability",
+            Type = CheckTypeEnum.HomePageAvailableBeta,
+            EnvironmentId = (int)EnvironmentsEnum.Beta
+        };
     }
 }

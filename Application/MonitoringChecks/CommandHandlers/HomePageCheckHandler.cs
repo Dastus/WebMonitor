@@ -11,7 +11,7 @@ using Monitor.Application.MonitoringChecks.Helpers;
 
 namespace Monitor.Application.MonitoringChecks.CommandHandlers
 {
-    public class HomePageCheckHandler : IRequestHandler<HomePageCheckCommand, CommandResult>
+    public class HomePageCheckHandler : IRequestHandler<HomePageCheckProdCommand, CommandResult>
     {
         private IHttpRequestService _httpService;
 
@@ -20,12 +20,12 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
             _httpService = httpService ?? throw new ArgumentNullException(nameof(httpService));
         }
 
-        public async Task<CommandResult> Handle(HomePageCheckCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResult> Handle(HomePageCheckProdCommand request, CancellationToken cancellationToken)
         {            
             var result = new CommandResult();
             result.Success = true;
             var check = new HomePageCheck(_httpService);
-            result.CheckModel = await check.CheckHomePageLoad(EnvironmentsEnum.Prod);
+            result.CheckModel = await check.CheckHomePageLoad(request.CheckSettings);
             return result;
         }
     }

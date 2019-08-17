@@ -17,21 +17,13 @@ namespace Monitor.Application.MonitoringChecks
             _driversFactory = driversFactory;
         }
 
-        public async Task<Check> CheckWebUISearch(EnvironmentsEnum environment)
+        public async Task<Check> CheckWebUISearch(CheckSettings settings)
         {
+            var result = new Check { Settings = settings};
+            result.State.LastCheckTime = DateTime.Now;
             var errorMessages = new List<string>();
-            var environmentId = (int)environment;
-            var result = new Check
-            {
-                Priority = PrioritiesEnum.Critical,
-                Service = "Web UI search",
-                Type = (environment == EnvironmentsEnum.Prod) ?
-                    CheckTypeEnum.WebUISearchProd : CheckTypeEnum.WebUISearchBeta,
-                LastCheckTime = DateTime.Now,
-                EnvironmentId = environmentId
-            };
 
-            var baseUrl = new EnvironmentHelper().GetEnvironmentUrl(environmentId);
+            var baseUrl = new EnvironmentHelper().GetEnvironmentUrl(settings.EnvironmentId);
 
             using (var driver = _driversFactory.GetChromeDriver())
             {
@@ -52,13 +44,13 @@ namespace Monitor.Application.MonitoringChecks
 
             if (errorMessages.Count > 0)
             {
-                result.Status = StatusesEnum.CRITICAL;
-                result.Description = "Обнаружены следующие проблемы: " + string.Join(", ", errorMessages);
+                result.State.Status = StatusesEnum.CRITICAL;
+                result.State.Description = "Обнаружены следующие проблемы: " + string.Join(", ", errorMessages);
                 return result;
             }
 
-            result.Status = StatusesEnum.OK;
-            result.Description = "Проблем не обнаружено";
+            result.State.Status = StatusesEnum.OK;
+            result.State.Description = "Проблем не обнаружено";
 
             return result;
         }

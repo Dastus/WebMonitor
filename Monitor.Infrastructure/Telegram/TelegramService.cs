@@ -35,10 +35,10 @@ namespace Monitor.Infrastructure.Telegram
 
         private string GetText(Check check)
         {
-            return "Проверка: " + check.Service + ", ID: " + check.Type 
-                + "\n Статус: " + check.Status.ToFriendlyString() 
-                + "\n Время срабатывания: " + check.StatusChangeTime.ToString()
-                + "\n Описание: " + check.Description;
+            return "Проверка: " + check.Settings.Service + ", ID: " + check.Settings.Type 
+                + "\n Статус: " + check.State.Status.ToFriendlyString() 
+                + "\n Время срабатывания: " + check.State.StatusChangeTime.ToString()
+                + "\n Описание: " + check.State.Description;
         }
     }
 }

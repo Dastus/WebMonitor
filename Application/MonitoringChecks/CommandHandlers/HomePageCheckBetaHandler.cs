@@ -23,7 +23,7 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
             var result = new CommandResult();
             result.Success = true;
             var check = new HomePageCheck(_httpService);
-            result.CheckModel = await check.CheckHomePageLoad(EnvironmentsEnum.Beta);
+            result.CheckModel = await check.CheckHomePageLoad(request.CheckSettings);
             return result;
         }
     }

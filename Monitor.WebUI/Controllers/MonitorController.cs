@@ -28,7 +28,7 @@ namespace Monitor.WebUI.Controllers
 
         [Route("get-checks")]
         [HttpGet]
-        public async Task<IEnumerable<Check>> GetChecks(int? environmentId)
+        public async Task<IEnumerable<CheckWebModel>> GetChecks(int? environmentId)
         {
             return await _mediator.Send(new GetChecksQuery { EnvironmentId = environmentId });
         }

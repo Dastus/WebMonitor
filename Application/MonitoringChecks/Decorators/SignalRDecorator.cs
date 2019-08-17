@@ -9,6 +9,7 @@ using MediatR;
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
     public class SignalRDecorator<TIn, TOut> : IPipelineBehavior<TIn, TOut>
+        where TIn : ICommand<TOut>
     {
         private ISignalRNotificationsService _notifier;
 
@@ -17,15 +18,9 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             _notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
         }
 
-        public async Task<TOut> Handle(TIn request, CancellationToken cancellationToken, RequestHandlerDelegate<TOut> next)
+        public async Task<TOut> Handle(TIn request, CancellationToken cancellationToken, RequestHandlerDelegate<TOut> next)            
         {
             var result = await next();
-
-            //can't configure separate pipeline for queries because of Core IoC limitations
-            if (request is IQuery<TOut>)
-            {
-                return result;
-            }
 
             var commandResult = result as CommandResult;
             if (commandResult.Success)

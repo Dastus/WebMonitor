@@ -5,7 +5,7 @@ using Monitor.Application.MonitoringChecks.Models;
 
 namespace Monitor.Application.MonitoringChecks.Queries
 {
-    public class GetChecksQuery : IQuery<List<Check>>, IRequest<List<Check>>
+    public class GetChecksQuery : IQuery<List<CheckWebModel>>, IRequest<List<CheckWebModel>>
     {
         public int? EnvironmentId { get; set; }
     }

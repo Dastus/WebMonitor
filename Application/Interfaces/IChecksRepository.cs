@@ -8,7 +8,7 @@ namespace Monitor.Application.Interfaces
     {
         Task Save(Check check);
         Check GetCheck(CheckTypeEnum checkType);
-        Task<IEnumerable<Check>> GetCurrentState();
-        Task<IEnumerable<Check>> GetCurrentStateForEnvironment(int? environmentId);
+        Task<IEnumerable<CheckWebModel>> GetCurrentState();
+        Task<IEnumerable<CheckWebModel>> GetCurrentStateForEnvironment(int? environmentId);
     }
 }

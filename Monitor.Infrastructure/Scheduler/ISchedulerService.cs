@@ -5,8 +5,8 @@ namespace Monitor.Infrastructure.Scheduler
 {
     public interface ISchedulerService
     {
-        Task AddToSchedule(Check check);
-        void RemoveFromSchedule(Check check);
+        Task AddToSchedule(CheckSettings check);
+        void RemoveFromSchedule(CheckSettings check);
         Task StopAll();
     }
 }

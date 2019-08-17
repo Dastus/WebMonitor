@@ -22,15 +22,15 @@ namespace Monitor.Infrastructure.Scheduler
             _scheduleRepository = scheduleRepository ?? throw new ArgumentNullException(nameof(scheduleRepository));
         }
 
-        public async Task AddToSchedule(Check check)
+        public async Task AddToSchedule(CheckSettings check)
         {
             var cancellationTokenSource = new CancellationTokenSource();
             _cancellationTokensMap.TryAdd(check.Type, cancellationTokenSource);
             var checkProcessor = new ScheduledTask(_processor);
-            await checkProcessor.ProcessCheck(check.Type, check.Schedule, cancellationTokenSource);
+            await checkProcessor.ProcessCheck(check.Type, check.NormalSchedule, cancellationTokenSource);
         }
 
-        public void RemoveFromSchedule(Check check)
+        public void RemoveFromSchedule(CheckSettings check)
         {
             if (_cancellationTokensMap.ContainsKey(check.Type))
             {

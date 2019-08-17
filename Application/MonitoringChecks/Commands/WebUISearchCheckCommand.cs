@@ -6,5 +6,13 @@ namespace Monitor.Application.MonitoringChecks.Commands
 {
     public class WebUISearchCheckCommand : IRequest<CommandResult>, ICommand<CommandResult>
     {
+        public CheckSettings CheckSettings => new CheckSettings
+        {
+            Priority = PrioritiesEnum.Critical,
+            Service = "Web UI search",
+            Type = CheckTypeEnum.WebUISearchProd,
+            EnvironmentId = (int)EnvironmentsEnum.Prod
+        };
+
     }
 }

@@ -7,6 +7,6 @@ namespace Monitor.Application.Interfaces
     public interface ICommandsProcessor
     {
         Task ExecuteCommand(CheckTypeEnum checkType);
-        Task RegisterCheckProcessor(Check check, IRequest<CommandResult> command);
+        Task RegisterCheckProcessor(CheckSettings check, IRequest<CommandResult> command);
     }
 }

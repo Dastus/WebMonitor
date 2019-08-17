@@ -12,25 +12,17 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
 {
     public class ApiSearchCheck
     {
-        public async Task<Check> CheckApiSearch(EnvironmentsEnum environment)
+        public async Task<Check> CheckApiSearch(CheckSettings settings)
         {
-            var environmentId = (int)environment;
-            var result = new Check
-            {
-                Priority = PrioritiesEnum.Critical,
-                Service = "Search API availability",
-                Type = (environment == EnvironmentsEnum.Prod) ?
-                    CheckTypeEnum.ApiSearchProd : CheckTypeEnum.ApiSearchCheckBeta,
-                LastCheckTime = DateTime.Now,
-                EnvironmentId = environmentId
-            };
+            var result = new Check();
+            result.State.LastCheckTime = DateTime.Now;
 
-            return await PerformSearchCheck(environmentId, result);
+            return await PerformSearchCheck(settings.EnvironmentId, result);
         }
         
         private async Task<Check> PerformSearchCheck(int environmentId, Check check)
         {            
-            check.Status = StatusesEnum.CRITICAL;
+            check.State.Status = StatusesEnum.CRITICAL;
             SearchParameters model = new SearchParameters
             {
                 SearchPhrase = "oc90"
@@ -52,7 +44,7 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
                 
                 if (!response.IsSuccessStatusCode)
                 {                    
-                    check.Description = "Полученный статус-код: " + check.Status;
+                    check.State.Description = "Полученный статус-код: " + check.State.Status;
                     return check;
                 }
 
@@ -63,31 +55,31 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
                     productResponse = JsonConvert.DeserializeObject<AutodocSearchResult>(responseContent);
                     if (productResponse == null)
                     {
-                        check.Description = "С сервера получена неправильная поисковая модель";
+                        check.State.Description = "С сервера получена неправильная поисковая модель";
                         return check;
                     }
                 }
                 catch
                 {
-                    check.Description = "Ошибка при парсинге поисковой модели";
+                    check.State.Description = "Ошибка при парсинге поисковой модели";
                     return check;
                 }
 
                 if (productResponse.TotalCount <= 0)
                 {
-                    check.Description = "поле 'Total' в ответе: " + productResponse.TotalCount;
+                    check.State.Description = "поле 'Total' в ответе: " + productResponse.TotalCount;
                     return check;
                 }
 
                 if (productResponse.Products.Count == 0)
                 {
-                    check.Description = "Ответ не содержит списка товаров";
+                    check.State.Description = "Ответ не содержит списка товаров";
                     return check;
                 }
             }
 
-            check.Status = StatusesEnum.OK;
-            check.Description = "Проблем не обнаружено";
+            check.State.Status = StatusesEnum.OK;
+            check.State.Description = "Проблем не обнаружено";
             return check;
         }
         

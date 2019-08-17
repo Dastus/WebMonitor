@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MediatR;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +10,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Monitor.Application.MonitoringChecks.Commands;
 using Monitor.Application.MonitoringChecks;
+using System.Reflection;
 
 namespace Monitor.Infrastructure.Registrator
 {
@@ -27,7 +29,7 @@ namespace Monitor.Infrastructure.Registrator
             _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
         }
         
-        public async Task RegisterCheck(Check check, IRequest<CommandResult> command)
+        public async Task RegisterCheck(CheckSettings check, IRequest<CommandResult> command)
         {
             await _checksProcessor.RegisterCheckProcessor(check, command);
             await _scheduler.AddToSchedule(check);
@@ -35,25 +37,27 @@ namespace Monitor.Infrastructure.Registrator
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var settingsList = new List<(Check check, IRequest<CommandResult> command)>
-            {
-                (new Check { Type = CheckTypeEnum.HomePageAvailableProd, Schedule = "* * * * *" }, new HomePageCheckCommand()),
-                (new Check { Type = CheckTypeEnum.MetaTagsProd, Schedule = "*/3 * * * *" }, new MetatagsCheckCommand()),
-                (new Check { Type = CheckTypeEnum.WebUISearchProd, Schedule = "*/2 * * * *" }, new WebUISearchCheckCommand()),
-                (new Check { Type = CheckTypeEnum.ApiSearchCheckProd, Schedule = "*/2 * * * *" }, new ApiSearchCheckProdCommand()),
-
-                (new Check { Type = CheckTypeEnum.HomePageAvailableBeta, Schedule = "* * * * *" }, new HomePageCheckBetaCommand()),
-                (new Check { Type = CheckTypeEnum.MetaTagsBeta, Schedule = "*/3 * * * *" }, new MetatagsCheckBetaCommand()),
-                (new Check { Type = CheckTypeEnum.WebUISearchBeta, Schedule = "*/2 * * * *" }, new WebUISearchCheckBetaCommand()),
-                (new Check { Type = CheckTypeEnum.ApiSearchCheckBeta, Schedule = "*/2 * * * *" }, new ApiSearchCheckBetaCommand()),
-            };
-
-            Parallel.ForEach(settingsList, async (x) => await RegisterCheck(x.check, x.command));
+            var commandsList = ScanForCommandsList();
+            Parallel.ForEach(commandsList, async (x) => await RegisterCheck(x.CheckSettings, x as IRequest<CommandResult>));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             await _scheduler.StopAll();
+        }
+
+        private List<ICommand<CommandResult>> ScanForCommandsList()
+        {
+            var commandType = typeof(ICommand<CommandResult>);
+            var requestType = typeof(IRequest<CommandResult>);
+
+            var commands = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => p.IsClass && commandType.IsAssignableFrom(p) && requestType.IsAssignableFrom(p))
+                .Select(t => Activator.CreateInstance(t) as ICommand<CommandResult>)
+                .ToList();
+
+            return commands;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Monitor.Application.MonitoringChecks.ResultsHandlingLogic
 
         private CheckResultHandlerBase Resolve(Check check)
         {
-            switch(check.Type)
+            switch(check.Settings.Type)
             {
                 default:
                     return new CheckResultHandlerBase(_notificationsService);

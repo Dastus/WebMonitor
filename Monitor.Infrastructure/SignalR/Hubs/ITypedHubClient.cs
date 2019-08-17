@@ -6,6 +6,6 @@ namespace Monitor.Infrastructure.SignalR
 {
     public interface ITypedHubClient
     {
-        Task BroadcastChecks(IEnumerable<Check> check);
+        Task BroadcastChecks(IEnumerable<CheckWebModel> check);
     }
 }

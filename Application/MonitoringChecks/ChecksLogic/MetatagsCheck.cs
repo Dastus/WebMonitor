@@ -18,20 +18,12 @@ namespace Monitor.Application.MonitoringChecks
             _httpService = httpService;
         }
 
-        public async Task<Check> CheckMetaInfo(EnvironmentsEnum environment)
+        public async Task<Check> CheckMetaInfo(CheckSettings settings)
         {
-            var environmentId = (int)environment;
-            var result = new Check
-            {
-                Priority = PrioritiesEnum.Medium,
-                Service = "Meta tags check",
-                Type = (environment == EnvironmentsEnum.Prod) ?
-                    CheckTypeEnum.MetaTagsProd : CheckTypeEnum.MetaTagsBeta,
-                LastCheckTime = DateTime.Now,
-                EnvironmentId = environmentId
-            };
+            var result = new Check{ Settings = settings };
+            result.State.LastCheckTime = DateTime.Now;
 
-            string address = new EnvironmentHelper().GetEnvironmentUrl(environmentId) + "/category/shiny-id49-3";
+            string address = new EnvironmentHelper().GetEnvironmentUrl(settings.EnvironmentId) + "/category/shiny-id49-3";
 
             try
             {
@@ -86,25 +78,25 @@ namespace Monitor.Application.MonitoringChecks
 
                 if (errors.Count() > 0)
                 {
-                    result.Status = StatusesEnum.CRITICAL;
-                    result.Description = "Обнаружены следующие проблемы: " + string.Join(",", errors);
+                    result.State.Status = StatusesEnum.CRITICAL;
+                    result.State.Description = "Обнаружены следующие проблемы: " + string.Join(",", errors);
                     return result;                }
 
                 var execTime = endTime - startTime;
                 if (execTime > TimeSpan.FromSeconds(warningThreshold))
                 {
-                    result.Status = StatusesEnum.WARNING;
-                    result.Description = "Время ответа больше порога " + warningThreshold + " сек: " + execTime.Seconds;
+                    result.State.Status = StatusesEnum.WARNING;
+                    result.State.Description = "Время ответа больше порога " + warningThreshold + " сек: " + execTime.Seconds;
                     return result;
                 }
 
-                result.Status = StatusesEnum.OK;
-                result.Description = "Проблем не обнаружено";
+                result.State.Status = StatusesEnum.OK;
+                result.State.Description = "Проблем не обнаружено";
             }
             catch
             {
-                result.Status = StatusesEnum.CRITICAL;
-                result.Description = "Ошибка при обработке HTML";
+                result.State.Status = StatusesEnum.CRITICAL;
+                result.State.Description = "Ошибка при обработке HTML";
             }
 
             return result;

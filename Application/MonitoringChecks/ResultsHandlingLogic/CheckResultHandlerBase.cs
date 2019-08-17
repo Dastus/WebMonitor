@@ -18,11 +18,11 @@ namespace Monitor.Application.MonitoringChecks.ResultsHandlingLogic
 
         public async Task HandleResult(Check check)
         {
-            if (check.Status == StatusesEnum.OK)
+            if (check.State.Status == StatusesEnum.OK)
             {
                 return;
             }
-
+            
             await _notificationsService.Notify(check);
         }
     }

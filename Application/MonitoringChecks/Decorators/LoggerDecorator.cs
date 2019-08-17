@@ -8,8 +8,8 @@ using System.Collections.Generic;
 
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
-    public class LoggerDecorator<TIn, TOut> : IPipelineBehavior<TIn, TOut>
-        where TOut : class
+    public class LoggerDecorator<TIn, TOut> : IPipelineBehavior<ICommand<CommandResult>, CommandResult>
+        where  TIn: ICommand<TOut>
     {
         private readonly ILoggerService _logger;
         
@@ -18,14 +18,8 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-
-        public async Task<TOut> Handle(TIn request, CancellationToken cancellationToken, RequestHandlerDelegate<TOut> next)
+        public async Task<CommandResult> Handle(ICommand<CommandResult> request, CancellationToken cancellationToken, RequestHandlerDelegate<CommandResult> next)
         {
-            //can't configure separate pipeline for queries because of Core IoC limitations
-            if (typeof(TOut) != typeof(CommandResult))
-            {
-                return await next();
-            }
             try
             {
                 var result = await next();
@@ -34,7 +28,7 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             }
             catch (Exception ex)
             {
-                return new CommandResult { Success = false, Errors = new List<string> { "Exception during Log Save: " + ex.Message } } as TOut;
+                return new CommandResult { Success = false, Errors = new List<string> { "Exception during Log Save: " + ex.Message } };
             }
         }
     }

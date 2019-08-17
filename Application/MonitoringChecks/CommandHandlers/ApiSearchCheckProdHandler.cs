@@ -13,7 +13,7 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
         {
             var result = new CommandResult { Success = true };
             var check = new ApiSearchCheck();
-            result.CheckModel = await check.CheckApiSearch(EnvironmentsEnum.Prod);
+            result.CheckModel = await check.CheckApiSearch(request.CheckSettings);
             return result;
         }
     }

@@ -9,7 +9,7 @@ using Monitor.Application.Interfaces;
 
 namespace Monitor.Application.MonitoringChecks.CommandHandlers
 {
-    public class MetatagsCheckHandler: IRequestHandler<MetatagsCheckCommand, CommandResult>
+    public class MetatagsCheckHandler: IRequestHandler<MetatagsCheckProdCommand, CommandResult>
     {
         private IHttpRequestService _httpService;
 
@@ -18,12 +18,12 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
             _httpService = httpService ?? throw new ArgumentNullException(nameof(httpService));
         }
 
-        public async Task<CommandResult> Handle(MetatagsCheckCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResult> Handle(MetatagsCheckProdCommand request, CancellationToken cancellationToken)
         {
             var result = new CommandResult();
             result.Success = true;
             var check = new MetatagsCheck(_httpService);
-            result.CheckModel = await check.CheckMetaInfo(EnvironmentsEnum.Prod);
+            result.CheckModel = await check.CheckMetaInfo(request.CheckSettings);
 
             return result;
         }

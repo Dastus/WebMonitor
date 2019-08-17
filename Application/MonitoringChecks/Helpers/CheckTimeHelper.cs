@@ -9,9 +9,9 @@ namespace Monitor.Application.MonitoringChecks.Helpers
     {
         public Check SetDurations(Check check, Check prevCheck)
         {
-            var execTime = (DateTime.Now - check.LastCheckTime).TotalMilliseconds;
-            check.ExecutionDuration = Math.Round(execTime, 3);             
-            check.StatusChangeTime = (check.Status != prevCheck?.Status) ? DateTime.Now : prevCheck.StatusChangeTime;
+            var execTime = (DateTime.Now - check.State.LastCheckTime).TotalMilliseconds;
+            check.State.ExecutionDuration = Math.Round(execTime, 3);             
+            check.State.StatusChangeTime = (check.State.Status != prevCheck?.State.Status) ? DateTime.Now : prevCheck.State.StatusChangeTime;
             return check;
         }
     }

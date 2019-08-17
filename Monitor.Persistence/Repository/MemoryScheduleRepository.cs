@@ -31,48 +31,48 @@ namespace Monitor.Persistence.Repository
                 { CheckTypeEnum.HomePageAvailableProd ,
                     new CheckSettings
                     {
-                        CheckType =CheckTypeEnum.HomePageAvailableProd,
-                        Schedule ="* * * * *"
+                        Type =CheckTypeEnum.HomePageAvailableProd,
+                        NormalSchedule ="* * * * *"
                     }
                 }, //every minute
 
                 { CheckTypeEnum.MetaTagsProd ,
                     new CheckSettings
                     {
-                        CheckType =CheckTypeEnum.MetaTagsProd,
-                        Schedule ="*/3 * * * *"
+                        Type =CheckTypeEnum.MetaTagsProd,
+                        NormalSchedule ="*/3 * * * *"
                     }
                 }  //every 3 minutes
 
                 ,{ CheckTypeEnum.WebUISearchProd ,
                     new CheckSettings
                     {
-                        CheckType =CheckTypeEnum.WebUISearchProd,
-                        Schedule ="*/2 * * * *"
+                        Type =CheckTypeEnum.WebUISearchProd,
+                        NormalSchedule ="*/2 * * * *"
                     }
                 },
 
                 { CheckTypeEnum.HomePageAvailableBeta ,
                     new CheckSettings
                     {
-                        CheckType =CheckTypeEnum.HomePageAvailableBeta,
-                        Schedule ="* * * * *"
+                        Type =CheckTypeEnum.HomePageAvailableBeta,
+                        NormalSchedule ="* * * * *"
                     }
                 }, //every minute
 
                 { CheckTypeEnum.MetaTagsBeta ,
                     new CheckSettings
                     {
-                        CheckType =CheckTypeEnum.MetaTagsBeta,
-                        Schedule ="*/3 * * * *"
+                        Type =CheckTypeEnum.MetaTagsBeta,
+                        NormalSchedule ="*/3 * * * *"
                     }
                 }  //every 3 minutes
 
                 ,{ CheckTypeEnum.WebUISearchBeta ,
                     new CheckSettings
                     {
-                        CheckType =CheckTypeEnum.WebUISearchBeta,
-                        Schedule ="*/2 * * * *"
+                        Type =CheckTypeEnum.WebUISearchBeta,
+                        NormalSchedule ="*/2 * * * *"
                     }
                 }
             };

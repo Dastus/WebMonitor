@@ -11,7 +11,7 @@ namespace Monitor.Application.MonitoringChecks.Decorators
 {
     //this class is intended to run specific logic after check (notify, call external api etc)
     public class CommandResultHandleDecorator<TIn, TOut> : IPipelineBehavior<TIn, TOut>
-        where TOut : class
+        where TIn : ICommand<TOut>
     {
         private readonly IResultHandlingService _handler;
 
@@ -22,12 +22,6 @@ namespace Monitor.Application.MonitoringChecks.Decorators
 
         public async Task<TOut> Handle(TIn request, CancellationToken cancellationToken, RequestHandlerDelegate<TOut> next)
         {
-            //can't configure separate pipeline for queries because of Core IoC limitations
-            if (typeof(TOut) != typeof(CommandResult))
-            {
-                return await next();
-            }
-
             var result = await next();
 
             try

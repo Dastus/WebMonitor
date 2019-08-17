@@ -1,4 +1,5 @@
 using MediatR;
+using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -22,6 +23,9 @@ using Monitor.Infrastructure.Logger;
 using Monitor.Infrastructure.Telegram;
 using Monitor.Application.MonitoringChecks.ResultsHandlingLogic;
 using Monitor.Infrastructure.Settings;
+using System;
+using AutoMapper;
+using Monitor.Infrastructure.Mappings;
 
 namespace Monitor.WebUI
 {
@@ -34,24 +38,32 @@ namespace Monitor.WebUI
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureContainer(ServiceRegistry services)
         {
-            services.Configure<TelegramNotificationSettings>(Configuration.GetSection("TelegramNotificationSettings"));
+            services.AddSignalR();
+            services.AddMvc();
 
-            services.AddTransient<IHttpRequestService, HttpRequestService>();
-            services.AddTransient<ISignalRNotificationsService, SignalRNotificationsService>();
-            services.AddTransient<ILoggerService, LoggerService>();
-            services.AddTransient<IWebDriversFactory, SeleniumDriversFactory>();
-            services.AddTransient<ITelegramNotificationService, TelegramService>();
-            services.AddTransient<IResultHandlingService, ResultHandlingService>();
-
+            services.Scan(s => {
+                //s.TheCallingAssembly();
+                //s.WithDefaultConventions();
+                s.AssemblyContainingType(typeof(HomePageCheckHandler));
+                s.ConnectImplementationsToTypesClosing(typeof(IRequestHandler<,>));
+                s.ConnectImplementationsToTypesClosing(typeof(INotificationHandler<>));
+            });
+            
             services.AddSingleton<ICommandsProcessor, CommandsProcessor>();
             services.AddSingleton<ISchedulerService, SchedulerService>();
             services.AddSingleton<IChecksRepository, MemoryCheckRepository>();
             services.AddSingleton<IScheduleRepository, MemoryScheduleRepository>();
             services.AddSingleton<IHostedService, CheckRegistrator>();
+            services.AddSingleton<ILoggerService, LoggerService>();
 
+            services.AddTransient<IHttpRequestService, HttpRequestService>();
+            services.AddTransient<ISignalRNotificationsService, SignalRNotificationsService>();
+            services.AddTransient<IResultHandlingService, ResultHandlingService>();
+
+            services.AddTransient<IWebDriversFactory, SeleniumDriversFactory>();
+            services.AddTransient<ITelegramNotificationService, TelegramService>();
 
             services.AddMediatR(typeof(HomePageCheckHandler).GetTypeInfo().Assembly);
 
@@ -61,18 +73,17 @@ namespace Monitor.WebUI
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SignalRDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DataStoreDecorator<,>));
 
-            services.AddSignalR();
+            services.Configure<TelegramNotificationSettings>(Configuration.GetSection("TelegramNotificationSettings"));
+            services.Configure<LoggerSettings>(Configuration.GetSection("LoggerSettings"));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddAutoMapper(typeof(ChecksMappingProfile));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, Microsoft.Extensions.Hosting.IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -88,6 +99,7 @@ namespace Monitor.WebUI
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
             app.UseSpaStaticFiles();
 
             app.UseSignalR(routes =>
@@ -104,9 +116,6 @@ namespace Monitor.WebUI
 
             app.UseSpa(spa =>
             {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
-
                 spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())

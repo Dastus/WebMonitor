@@ -6,30 +6,53 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Monitor.Infrastructure.Settings;
+using Microsoft.Extensions.Options;
+using System.Threading;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Monitor.Infrastructure.Logger
 {
     public class LoggerService : ILoggerService
     {
-        //TODO: move to config
-        const string LOG_PATH = @"E:\Vodolazkiy\test\Logs";
+        private IOptions<LoggerSettings> _settings;
+        private HashSet<string> _createdFiles = new HashSet<string>();
+        private ConcurrentDictionary<string, ReaderWriterLockSlim> _locksMap = new ConcurrentDictionary<string, ReaderWriterLockSlim>();
+
+        public LoggerService(IOptions<LoggerSettings> settings)
+        {
+            _settings = settings ?? throw new ArgumentNullException("logger settings is empty");
+        }
 
         public async Task SaveLog(CommandResult result)
         {
-            var filePath = GetFilePath(result);
-            if (File.Exists(filePath))
-            {
-                await WriteToFile(filePath, result);
-            }
-            await PrepareLogFile(result);
-            await WriteToFile(filePath, result);
+            await Task.Run(() => {
+                var filePath = GetFilePath(result);
+
+                if (_locksMap.ContainsKey(filePath))
+                {
+                    WriteToFile(filePath, result);
+                    return;
+                } 
+
+                if (!File.Exists(filePath))
+                {
+                    var fileLock = new ReaderWriterLockSlim();
+                    _locksMap.TryAdd(filePath, fileLock);
+             
+                    PrepareLogFile(result);
+                    WriteToFile(filePath, result);
+                }
+
+            }).ConfigureAwait(false);            
         }
 
-        private async Task PrepareLogFile(CommandResult result)
-        {
-            var dirPathYear = Path.Combine(LOG_PATH, DateTime.Now.Year.ToString());
+        private void PrepareLogFile(CommandResult result)
+        {    
+            var dirPathYear = Path.Combine(_settings.Value.LogDirectoryPath, DateTime.Now.Year.ToString());
             var dirPathMonth = Path.Combine(dirPathYear, DateTime.Now.Month.ToString());
-            var filePath = Path.Combine(dirPathMonth, GetFileName(result));
+            var filePath = Path.Combine(dirPathMonth, GetFileName(result));                        
 
             if (!Directory.Exists(dirPathYear))
             {
@@ -43,37 +66,48 @@ namespace Monitor.Infrastructure.Logger
 
             if (!File.Exists(filePath))
             {
-                File.Create(filePath);
-                using (StreamWriter outputFile = File.AppendText(filePath))
-                {
-                    var head = "DateTime | Check | Success | Description | Duration";
-                    await outputFile.WriteLineAsync(head);
-                }
+                var file = File.Create(filePath);
+                file.Close();//
+                var head = "DateTime | Check | Success | Description | Duration";
+                PerformSafeWrite(filePath, head);
             }
         }
 
-        private async Task WriteToFile(string filePath, CommandResult result)
+        private void WriteToFile(string filePath, CommandResult result)
         {
-            using (StreamWriter outputFile = File.AppendText(filePath))
+            string dateTime = result.CheckModel?.State.LastCheckTime.ToString() ?? DateTime.Now.ToString();
+            string check = result.CheckModel?.Settings.Service;
+            string env = GetEnvironmentName(result);
+            string success = ((result.Success) ? " Success" : " Fail");
+            string errors = (result.Success) ? "" : String.Join(" ", result.Errors);
+            string status = result.CheckModel?.State.Status.ToFriendlyString();
+            string description = result.CheckModel?.State.Description;
+            string duration = result.CheckModel?.State.ExecutionDuration.ToString();
+
+            var logRecord = String.Join(" | ", dateTime, check, success, status, errors, description, duration);
+
+            PerformSafeWrite(filePath, logRecord);
+        }
+ 
+        private void PerformSafeWrite(string filePath, string logRecord)
+        {
+            var fileLock = _locksMap[filePath];
+
+            try
+            {                
+                fileLock.EnterWriteLock();
+                File.AppendAllLines(filePath, new string[] { logRecord });
+            }
+            finally
             {
-                string dateTime = result.CheckModel.LastCheckTime.ToShortDateString();
-                string check = result.CheckModel?.Service;
-                string env = GetEnvironmentName(result);
-                string success = ((result.Success) ? " Success" : " Fail");
-                string errors = (result.Success) ? "" : String.Join(" ", result.Errors);
-                string status = result.CheckModel?.Status.ToFriendlyString();
-                string description = result.CheckModel?.Description;
-                string duration = result.CheckModel?.ExecutionDuration.ToString();
-
-                var logRecord = String.Join(" | ", dateTime, check, success, status, errors, description, duration);
-
-                await outputFile.WriteLineAsync(logRecord);
+                fileLock.ExitWriteLock();
             }
         }
+
         private string GetFilePath(CommandResult result)
         {
             return Path.Combine(
-                LOG_PATH,
+                 _settings.Value.LogDirectoryPath,
                  DateTime.Now.Year.ToString(),
                  DateTime.Now.Month.ToString(),
                  GetFileName(result)
@@ -86,9 +120,9 @@ namespace Monitor.Infrastructure.Logger
         private string GetEnvironmentName(CommandResult result)
         {
             string env;
-            if (result.CheckModel?.EnvironmentId != null)
+            if (result.CheckModel?.Settings.EnvironmentId != null)
             {
-                env = (result.CheckModel.EnvironmentId == (int)EnvironmentsEnum.Prod) ? " prod" : "beta";
+                env = (result.CheckModel.Settings.EnvironmentId == (int)EnvironmentsEnum.Prod) ? " prod" : "beta";
             }
             else
             {

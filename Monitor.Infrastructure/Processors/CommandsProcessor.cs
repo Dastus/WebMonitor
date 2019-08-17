@@ -33,7 +33,7 @@ namespace Monitor.Infrastructure.Processors
             return _handlersDict[checkType];
         }
 
-        public async Task RegisterCheckProcessor(Check check, IRequest<CommandResult> command)
+        public async Task RegisterCheckProcessor(CheckSettings check, IRequest<CommandResult> command)
         {
             if (_handlersDict.ContainsKey(check.Type))
             {

@@ -10,7 +10,7 @@ using System;
 
 namespace Monitor.Application.MonitoringChecks.QueryHandlers
 {
-    public class GetChecksQueryHandler : IRequestHandler<GetChecksQuery, List<Check>>
+    public class GetChecksQueryHandler : IRequestHandler<GetChecksQuery, List<CheckWebModel>>
     {
         private IChecksRepository _repository;
 
@@ -19,7 +19,7 @@ namespace Monitor.Application.MonitoringChecks.QueryHandlers
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task<List<Check>> Handle(GetChecksQuery request, CancellationToken cancellationToken)
+        public async Task<List<CheckWebModel>> Handle(GetChecksQuery request, CancellationToken cancellationToken)
         {
             var checks = await _repository.GetCurrentStateForEnvironment(request.EnvironmentId);
             return checks.ToList();

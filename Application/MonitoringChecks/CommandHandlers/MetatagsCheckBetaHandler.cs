@@ -23,7 +23,7 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
             var result = new CommandResult();
             result.Success = true;
             var check = new MetatagsCheck(_httpService);
-            result.CheckModel = await check.CheckMetaInfo(EnvironmentsEnum.Beta);
+            result.CheckModel = await check.CheckMetaInfo(request.CheckSettings);
 
             return result;
         }

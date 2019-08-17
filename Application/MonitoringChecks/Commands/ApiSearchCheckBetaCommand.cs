@@ -6,5 +6,12 @@ namespace Monitor.Application.MonitoringChecks.Commands
 {
     public class ApiSearchCheckBetaCommand : IRequest<CommandResult>, ICommand<CommandResult>
     {
+        public CheckSettings CheckSettings => new CheckSettings
+        {
+            Priority = PrioritiesEnum.Critical,
+            Service = "Search API availability",
+            Type = CheckTypeEnum.ApiSearchCheckBeta,
+            EnvironmentId = (int)EnvironmentsEnum.Beta
+        };
     }
 }

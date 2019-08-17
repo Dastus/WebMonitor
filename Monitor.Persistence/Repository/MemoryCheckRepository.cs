@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Monitor.Application.MonitoringChecks.Models;
 using Monitor.Application.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using AutoMapper;
+using Monitor.Application.MonitoringChecks.Commands;
 
 namespace Monitor.Persistence.Repository
 {
@@ -11,18 +14,15 @@ namespace Monitor.Persistence.Repository
     {
         private IMemoryCache _cache;
         const string CACHE_KEY = "checks_list";
+        private IMapper _mapper;
 
-        public MemoryCheckRepository(IMemoryCache memoryCache)
+        public MemoryCheckRepository(IMemoryCache memoryCache, IMapper mapper)
         {
-            _cache = memoryCache;
-
-            var dict = _cache.Get<Dictionary<CheckTypeEnum, Check>>(CACHE_KEY);
-            if (dict == null)
-            {
-                InitDict();
-            }
+            _cache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _cache.Set(CACHE_KEY, new Dictionary<CheckTypeEnum, Check>());
         }
-
+        
         public Check GetCheck(CheckTypeEnum checkType)
         {
             var dict = _cache.Get<Dictionary<CheckTypeEnum, Check>>(CACHE_KEY);
@@ -30,72 +30,37 @@ namespace Monitor.Persistence.Repository
             return dict.ContainsKey(checkType) ? dict[checkType] : null;
         }
 
-        public async Task<IEnumerable<Check>> GetCurrentState()
+        public async Task<IEnumerable<CheckWebModel>> GetCurrentState()
         {
             var dict = _cache.Get<Dictionary<CheckTypeEnum, Check>>(CACHE_KEY);
+            var result = _mapper.Map<IEnumerable<Check>, IEnumerable<CheckWebModel>>(dict.Values);
 
-            return dict.Values;
+            return result;
         }
 
-        public async Task<IEnumerable<Check>> GetCurrentStateForEnvironment(int? environmentId)
+        public async Task<IEnumerable<CheckWebModel>> GetCurrentStateForEnvironment(int? environmentId)
         {
             var dict = _cache.Get<Dictionary<CheckTypeEnum, Check>>(CACHE_KEY);
 
-            return (environmentId != null && environmentId.HasValue) ? 
-                dict.Values.Where(x => x.EnvironmentId == environmentId.Value) : 
+            var checks = (environmentId != null && environmentId.HasValue) ? 
+                dict.Values.Where(x => x.Settings.EnvironmentId == environmentId.Value) : 
                 dict.Values;
+            var result = _mapper.Map<IEnumerable<Check>, IEnumerable<CheckWebModel>>(checks);
+
+            return result;
         }
 
         public async Task Save(Check check)
         {
             var dict = _cache.Get<Dictionary<CheckTypeEnum, Check>>(CACHE_KEY);
-            if (dict.ContainsKey(check.Type))
+            if (dict.ContainsKey(check.Settings.Type))
             {
-                dict[check.Type] = check;
+                dict[check.Settings.Type] = check;
             }
             else
             {
-                dict.Add(check.Type, check);
+                dict.Add(check.Settings.Type, check);
             }            
-
-            _cache.Set(CACHE_KEY, dict);
-        }
-
-        private void InitDict()
-        {
-            //test implementation
-            //TODO: implement real DB implementation
-            var check1 = new Check
-            {
-                Priority = PrioritiesEnum.Critical,
-                Status = StatusesEnum.CRITICAL,
-                Service = "Autodoc site availability",
-                Description = "Если статус 'CRITICAL', то сайт лежит",
-                Type = CheckTypeEnum.HomePageAvailableProd
-            };
-
-            var check2 = new Check
-            {
-                Priority = PrioritiesEnum.Medium,
-                Status = StatusesEnum.CRITICAL,
-                Service = "Meta tags",
-                Description = "Если статус 'CRITICAL', то нет метатегов",
-                Type = CheckTypeEnum.MetaTagsProd
-            };
-
-            var check3 = new Check
-            {
-                Priority = PrioritiesEnum.Medium,
-                Status = StatusesEnum.CRITICAL,
-                Service = "Web UI Search",
-                Description = "Если статус 'CRITICAL', то не работает поиск",
-                Type = CheckTypeEnum.WebUISearchProd
-            };
-
-            var dict = new Dictionary<CheckTypeEnum, Check> {
-                { CheckTypeEnum.HomePageAvailableProd, check1 },
-                { CheckTypeEnum.MetaTagsProd, check2}
-            };
 
             _cache.Set(CACHE_KEY, dict);
         }

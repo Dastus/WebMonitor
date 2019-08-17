@@ -4,29 +4,36 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Monitor.Application.MonitoringChecks.Models;
 using MediatR;
+using Monitor.Application.Interfaces;
 
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
-    public class CommandExceptionsDecorator<TIn, TOut> : IPipelineBehavior<TIn, TOut> 
-        where TOut : class
+    public class CommandExceptionsDecorator<TIn, TOut> : IPipelineBehavior<ICommand<CommandResult>, CommandResult> 
+        where TIn : ICommand<TOut>
     {
-        public async Task<TOut> Handle(TIn request, CancellationToken cancellationToken, RequestHandlerDelegate<TOut> next)
+        public async Task<CommandResult> Handle(ICommand<CommandResult> request, CancellationToken cancellationToken, RequestHandlerDelegate<CommandResult> next)
         {
-            if (typeof(TOut) != typeof(CommandResult))
-            {
-                return await next();
-            }
-
             try
             {
-                return await next();
+                var result = await next();
+                return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return new CommandResult {
+                return new CommandResult
+                {
                     Success = false,
-                    Errors = new List<string> { ex.Message }
-                } as TOut;
+                    Errors = new List<string> { ex.Message },
+                    CheckModel = new Check {
+                        Settings = request.CheckSettings,
+                        State = new CheckState
+                        {
+                            Status = StatusesEnum.CRITICAL,
+                            Description = "Exception during check execution: " + ex.Message,
+                            LastCheckTime = DateTime.Now
+                        }
+                    }
+                };
             }
         }
     }

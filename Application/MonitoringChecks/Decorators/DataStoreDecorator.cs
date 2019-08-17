@@ -9,6 +9,7 @@ using Monitor.Application.MonitoringChecks.Helpers;
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
     public class DataStoreDecorator<TIn, TOut> : IPipelineBehavior<TIn, TOut>
+        where TIn: ICommand<TOut>
     {
         private IChecksRepository _store;
 
@@ -21,17 +22,11 @@ namespace Monitor.Application.MonitoringChecks.Decorators
         {  
             var result = await next();
 
-            //can't configure separate pipeline for queries because of Core IoC limitations
-            if (request is IQuery<TOut>)
-            {
-                return result;
-            }
-               
             var commandResult = result as CommandResult;           
 
             if (commandResult.Success)
             {
-                var prevState = _store.GetCheck(commandResult.CheckModel.Type);
+                var prevState = _store.GetCheck(commandResult.CheckModel.Settings.Type);
                 commandResult.CheckModel = new CheckTimeHelper().SetDurations(commandResult.CheckModel, prevState);
 
                 await _store.Save(commandResult.CheckModel);

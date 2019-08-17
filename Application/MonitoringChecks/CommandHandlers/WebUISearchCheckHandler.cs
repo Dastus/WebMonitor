@@ -23,7 +23,7 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
             var result = new CommandResult();
             result.Success = true;
             var check = new WebUISearchCheck(_driversFactory);
-            result.CheckModel = await check.CheckWebUISearch(EnvironmentsEnum.Prod);
+            result.CheckModel = await check.CheckWebUISearch(request.CheckSettings);
 
             return result;
         }        
