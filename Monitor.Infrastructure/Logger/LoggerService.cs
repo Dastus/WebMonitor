@@ -36,11 +36,11 @@ namespace Monitor.Infrastructure.Logger
                     return;
                 } 
 
+                var fileLock = new ReaderWriterLockSlim();
+                _locksMap.TryAdd(filePath, fileLock);
+
                 if (!File.Exists(filePath))
                 {
-                    var fileLock = new ReaderWriterLockSlim();
-                    _locksMap.TryAdd(filePath, fileLock);
-             
                     PrepareLogFile(result);
                     WriteToFile(filePath, result);
                 }

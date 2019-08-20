@@ -12,5 +12,6 @@ namespace Monitor.Application.MonitoringChecks.Models
         WebUISearchBeta = 7,
         ApiSearchCheckProd = 8,
         ApiSearchCheckBeta = 9,
+        ExampleUnitTestCheckProd = 10,
     }
 }

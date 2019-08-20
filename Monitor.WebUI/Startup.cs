@@ -26,6 +26,7 @@ using Monitor.Infrastructure.Settings;
 using System;
 using AutoMapper;
 using Monitor.Infrastructure.Mappings;
+using Monitor.Infrastructure.ExternalUnitTests;
 
 namespace Monitor.WebUI
 {
@@ -61,6 +62,7 @@ namespace Monitor.WebUI
             services.AddTransient<IHttpRequestService, HttpRequestService>();
             services.AddTransient<ISignalRNotificationsService, SignalRNotificationsService>();
             services.AddTransient<IResultHandlingService, ResultHandlingService>();
+            services.AddTransient<IUnitTestsProcessorService, UnitTestsProcessorService>();
 
             services.AddTransient<IWebDriversFactory, SeleniumDriversFactory>();
             services.AddTransient<ITelegramNotificationService, TelegramService>();

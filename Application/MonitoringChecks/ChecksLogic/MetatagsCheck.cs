@@ -43,7 +43,7 @@ namespace Monitor.Application.MonitoringChecks
 
                 var robots = htmlResult.GetMetaTagContent("robots");
 
-                if (robots != "index, follow")
+                if (settings.EnvironmentId == (int)EnvironmentsEnum.Prod && robots != "index, follow")
                 {
                     errors.Add("'robots' tag content incorrect: " + robots);
                 }

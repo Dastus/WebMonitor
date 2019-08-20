@@ -40,17 +40,17 @@ namespace Monitor.Application.MonitoringChecks
                 if (loadResult.LoadTime > TimeSpan.FromSeconds(3))
                 {
                     result.State.Status = StatusesEnum.WARNING;
-                    result.State.Description = "Время загрузки более 3 сек";
+                    result.State.Description = "Время загрузки более 3 сек: " + loadResult.LoadTime.Seconds;
                     return result;
                 }
 
                 result.State.Status = StatusesEnum.OK;
-                result.State.Description = "Главная страница в порядке";
+                result.State.Description = "Проблем не обнаружено";
             }
-            catch
+            catch(Exception ex)
             {
                 result.State.Status = StatusesEnum.CRITICAL;
-                result.State.Description = "Сайт недоступен";
+                result.State.Description = "Исключение во время проверки: " + ex.Message;
             }
 
             return result;

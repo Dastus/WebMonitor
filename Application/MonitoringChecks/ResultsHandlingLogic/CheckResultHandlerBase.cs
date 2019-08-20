@@ -18,7 +18,7 @@ namespace Monitor.Application.MonitoringChecks.ResultsHandlingLogic
 
         public async Task HandleResult(Check check)
         {
-            if (check.State.Status == StatusesEnum.OK)
+            if (check.State.Status == StatusesEnum.OK || check.State.Status == StatusesEnum.WARNING)
             {
                 return;
             }

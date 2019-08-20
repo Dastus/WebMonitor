@@ -8,9 +8,6 @@ using Monitor.Application.MonitoringChecks.Models;
 using Monitor.Infrastructure.Scheduler;
 using System.Threading;
 using System.Collections.Generic;
-using Monitor.Application.MonitoringChecks.Commands;
-using Monitor.Application.MonitoringChecks;
-using System.Reflection;
 
 namespace Monitor.Infrastructure.Registrator
 {

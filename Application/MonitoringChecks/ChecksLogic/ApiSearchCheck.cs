@@ -12,9 +12,11 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
 {
     public class ApiSearchCheck
     {
+        private TimeSpan timeOut = TimeSpan.FromSeconds(30);
+
         public async Task<Check> CheckApiSearch(CheckSettings settings)
         {
-            var result = new Check();
+            var result = new Check { Settings = settings };
             result.State.LastCheckTime = DateTime.Now;
 
             return await PerformSearchCheck(settings.EnvironmentId, result);
@@ -36,7 +38,7 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
 
             var content = new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json");
 
-            using (var client = new HttpClient())
+            using (var client = new HttpClient { Timeout = timeOut })
             {
                 //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
 
