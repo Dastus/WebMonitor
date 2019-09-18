@@ -11,19 +11,18 @@ namespace Monitor.Application.MonitoringChecks.ResultsHandlingLogic
     {
         private readonly INotificationsService _notificationsService;
 
-        public CheckResultHandlerBase(INotificationsService notificationsService)
+        public CheckResultHandlerBase(
+            INotificationsService notificationsService
+        )
         {
             _notificationsService = notificationsService;
         }
 
         public async Task HandleResult(Check check)
         {
-            if (check.State.Status == StatusesEnum.OK || check.State.Status == StatusesEnum.WARNING)
-            {
-                return;
-            }
-            
-            await _notificationsService.Notify(check);
+            //here should be implementation of some action that needs to be performed
+            //after check
+            //await _notificationsService.Notify(check);
         }
     }
 }

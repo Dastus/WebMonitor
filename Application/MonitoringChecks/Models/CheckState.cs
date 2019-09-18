@@ -11,5 +11,6 @@ namespace Monitor.Application.MonitoringChecks.Models
         public double ExecutionDuration { get; set; }
         public StatusesEnum Status { get; set; }
         public string Description { get; set; }
+        public string DiagnosticsInfo { get; set; } = "";//
     }
 }

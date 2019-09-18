@@ -11,7 +11,8 @@ namespace Monitor.Application.MonitoringChecks.Commands
             Priority = PrioritiesEnum.Critical,
             Service = "Autodoc beta site availability",
             Type = CheckTypeEnum.HomePageAvailableBeta,
-            EnvironmentId = (int)EnvironmentsEnum.Beta
+            EnvironmentId = (int)EnvironmentsEnum.Beta,
+            CheckFullDescription = "Проверка доступности и времени загрузки html-кода главной страницы"
         };
     }
 }

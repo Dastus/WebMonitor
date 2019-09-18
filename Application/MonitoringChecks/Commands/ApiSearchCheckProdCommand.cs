@@ -11,7 +11,8 @@ namespace Monitor.Application.MonitoringChecks.Commands
             Priority = PrioritiesEnum.Critical,
             Service = "Search API availability",
             Type = CheckTypeEnum.ApiSearchCheckProd,
-            EnvironmentId = (int)EnvironmentsEnum.Prod
+            EnvironmentId = (int)EnvironmentsEnum.Prod,
+            CheckFullDescription = "Проверка результатов АПИ поискового запроса. Поиск ос90"
         };
     }
 }

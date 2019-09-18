@@ -4,14 +4,15 @@ using MediatR;
 
 namespace Monitor.Application.MonitoringChecks
 {
-    public class MetatagsCheckBetaCommand : IRequest<CommandResult>,  ICommand<CommandResult>
+    public class CategoryMetatagsCheckProdCommand : IRequest<CommandResult>,  ICommand<CommandResult>
     {
         public CheckSettings CheckSettings => new CheckSettings
         {
             Priority = PrioritiesEnum.Medium,
             Service = "Meta tags check",
-            Type = CheckTypeEnum.MetaTagsBeta,
-            EnvironmentId = (int)EnvironmentsEnum.Beta
+            Type = CheckTypeEnum.CategoryMetaTagsProd,
+            EnvironmentId = (int)EnvironmentsEnum.Prod,
+            CheckFullDescription = "Проверка тегов rel, next, canonical, index, follow"
         };
     }
 }

@@ -16,9 +16,15 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
             _processor = processor ?? throw new ArgumentNullException(nameof(IUnitTestsProcessorService));
         }
 
-        public async Task<Check> RunUnitTest(CheckSettings checkSettings, string testName, string path)
+        public async Task<Check> RunMsUnitTest(CheckSettings checkSettings, string testName, string path)
         {
-            var checkState = await _processor.ExecuteUnitTest(testName, path);
+            var checkState = await _processor.ExecuteMsTestUnitTest(testName, path);
+            return new Check { Settings = checkSettings, State = checkState };
+        }
+
+        public async Task<Check> RunNUnitTest(CheckSettings checkSettings, string testName, string path)
+        {
+            var checkState = await _processor.ExecuteNUnitTest(testName, path);
             return new Check { Settings = checkSettings, State = checkState };
         }
     }

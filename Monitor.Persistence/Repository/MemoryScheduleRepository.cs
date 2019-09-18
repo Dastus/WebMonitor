@@ -36,10 +36,10 @@ namespace Monitor.Persistence.Repository
                     }
                 }, //every minute
 
-                { CheckTypeEnum.MetaTagsProd ,
+                { CheckTypeEnum.CategoryMetaTagsProd ,
                     new CheckSettings
                     {
-                        Type =CheckTypeEnum.MetaTagsProd,
+                        Type =CheckTypeEnum.CategoryMetaTagsProd,
                         NormalSchedule ="*/3 * * * *"
                     }
                 }  //every 3 minutes
@@ -60,10 +60,10 @@ namespace Monitor.Persistence.Repository
                     }
                 }, //every minute
 
-                { CheckTypeEnum.MetaTagsBeta ,
+                { CheckTypeEnum.CategoryMetaTagsBeta ,
                     new CheckSettings
                     {
-                        Type =CheckTypeEnum.MetaTagsBeta,
+                        Type =CheckTypeEnum.CategoryMetaTagsBeta,
                         NormalSchedule ="*/3 * * * *"
                     }
                 }  //every 3 minutes

@@ -11,7 +11,8 @@ namespace Monitor.Application.MonitoringChecks.Commands
             Priority = PrioritiesEnum.Critical,
             Service = "Autodoc site availability",
             Type = CheckTypeEnum.HomePageAvailableProd,
-            EnvironmentId = (int)EnvironmentsEnum.Prod
+            EnvironmentId = (int)EnvironmentsEnum.Prod,
+            CheckFullDescription = "Проверка доступности и времени загрузки html-кода главной страницы"
         };
     }
 }

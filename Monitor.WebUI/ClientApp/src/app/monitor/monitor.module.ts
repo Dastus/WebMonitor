@@ -9,11 +9,13 @@ import { MonitorEffects } from './effects/monitor.effects';
 import { monitorReducer } from './reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { CheckTooltipComponent } from './components/check-tooltip/check-tooltip.component';
 
 @NgModule({
   declarations: [
     ChecksListComponent,
     CheckComponent,
+    CheckTooltipComponent,
   ],
   imports: [
     HttpClientModule,

@@ -12,7 +12,8 @@ namespace Monitor.Application.MonitoringChecks.Commands
             Priority = PrioritiesEnum.Low,
             Service = "Unit test execution: 'TestMethodPositive'",
             Type = CheckTypeEnum.ExampleUnitTestCheckProd,
-            EnvironmentId = (int)EnvironmentsEnum.Prod
+            EnvironmentId = (int)EnvironmentsEnum.Prod,
+            CheckFullDescription = "Результаты запуска юнит теста 'TestMethodPositive'"
         };
     }
 }

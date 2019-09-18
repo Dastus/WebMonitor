@@ -5,11 +5,12 @@ using Monitor.Application.MonitoringChecks.Models;
 using Monitor.Application.Interfaces;
 using MediatR;
 using Monitor.Application.MonitoringChecks.Helpers;
+using System.Diagnostics;
 
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
-    public class DataStoreDecorator<TIn, TOut> : IPipelineBehavior<TIn, TOut>
-        where TIn: ICommand<TOut>
+    public class DataStoreDecorator<TIn, TOut> : IPipelineBehavior<ICommand<CommandResult>, CommandResult>
+        where TIn : ICommand<TOut>
     {
         private IChecksRepository _store;
 
@@ -18,11 +19,14 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             _store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task<TOut> Handle(TIn request, CancellationToken cancellationToken, RequestHandlerDelegate<TOut> next)
+        public async Task<CommandResult> Handle(ICommand<CommandResult> request, CancellationToken cancellationToken, RequestHandlerDelegate<CommandResult> next)
         {  
             var result = await next();
 
-            var commandResult = result as CommandResult;           
+            var sw = new Stopwatch();//
+            sw.Start();//
+
+            var commandResult = result;           
 
             if (commandResult.Success)
             {
@@ -31,6 +35,9 @@ namespace Monitor.Application.MonitoringChecks.Decorators
 
                 await _store.Save(commandResult.CheckModel);
             }
+
+            sw.Stop();//
+            result.CheckModel.State.DiagnosticsInfo += " DataStore: " + sw.ElapsedMilliseconds;
 
             return result;
         }

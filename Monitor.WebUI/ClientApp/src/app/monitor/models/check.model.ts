@@ -9,6 +9,7 @@ export class Check {
   public executionDuration: number;
   public status: StatusesEnum;
   public service: string;
+  public checkFullDescription: string;
   public statusInfo: string;
   public description: string;
   public priority: PrioritiesEnum;

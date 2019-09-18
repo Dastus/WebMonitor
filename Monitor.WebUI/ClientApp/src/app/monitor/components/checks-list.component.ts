@@ -16,6 +16,7 @@ import * as actions from '../actions/monitor.actions';
 export class ChecksListComponent implements OnInit, OnDestroy {
 
   public checks$: Observable<Check[]>;
+  public displayOkChecks: boolean = false; 
   private _destroy$: Subject<boolean> = new Subject<boolean>();
   private environment: string;
 
@@ -32,7 +33,7 @@ export class ChecksListComponent implements OnInit, OnDestroy {
 
         this.checks$ = this._store.select(fromMonitorStore.getChecksForEnvironment, this.environment);
 
-        this._store.dispatch( new actions.GetChecks({ environment: this.environment }));
+        this._store.dispatch(new actions.GetChecks({ environment: this.environment }));
       });
     //this.checks$.pipe(takeUntil(this._destroy$)).subscribe(envChecks => { console.log({ envChecks }) });
   }
@@ -49,5 +50,10 @@ export class ChecksListComponent implements OnInit, OnDestroy {
 
   public runManualCheck(check: Check): void {
     this._store.dispatch(new actions.RunCheck({ checkType: check.type }));
+  }
+
+  public onOkChecksChange(): void {
+    this._store.dispatch(new actions.ShowOkStatusChecks(this.displayOkChecks));
+    this._store.dispatch(new actions.ApplyFilters());
   }
 }

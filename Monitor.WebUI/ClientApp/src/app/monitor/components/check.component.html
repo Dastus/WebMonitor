@@ -3,16 +3,16 @@
     <p>{{ getPriorityDescription() }}</p>
   </div>
   <div class="col-sm-2">
-    <p>{{ check.service }}</p>
+    <check-tooltip [mainText]="check.service " [tooltipText]="check.checkFullDescription"></check-tooltip>
   </div>
   <div class="col-sm-1" [ngStyle]="getStatusStyle()">
      <p>{{ getStatusDescription() }}</p>
   </div>
   <div class="col-sm-2">
-    <p>{{ check.lastCheckTime | date:'medium' }}</p>
+    <p>{{ check.lastCheckTime | date:'short' }}</p>
   </div>
   <div class="col-sm-2">
-    <p>{{ check.statusChangeTime | date:'hh:mm:ss' }}</p>
+    <p>{{ check.statusChangeTime | date:'short' }}</p>
   </div>
   <div class="col-sm-3">
     <p>{{ check.description }}</p>

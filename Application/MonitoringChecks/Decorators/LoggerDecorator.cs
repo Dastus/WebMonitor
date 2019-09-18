@@ -5,6 +5,7 @@ using Monitor.Application.MonitoringChecks.Models;
 using MediatR;
 using Monitor.Application.Interfaces;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
@@ -23,7 +24,15 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             try
             {
                 var result = await next();
+
+                var sw = new Stopwatch();//
+                sw.Start();//
+
                 await _logger.SaveLog(result as CommandResult);
+
+                sw.Stop();//
+                result.CheckModel.State.DiagnosticsInfo += " Logger: " + sw.ElapsedMilliseconds;
+
                 return result;
             }
             catch (Exception ex)

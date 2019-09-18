@@ -68,7 +68,7 @@ namespace Monitor.Infrastructure.Logger
             {
                 var file = File.Create(filePath);
                 file.Close();//
-                var head = "DateTime | Check | Success | Description | Duration";
+                var head = "DateTime | Check | Success | Description | Duration | DiagInfo";
                 PerformSafeWrite(filePath, head);
             }
         }
@@ -83,8 +83,9 @@ namespace Monitor.Infrastructure.Logger
             string status = result.CheckModel?.State.Status.ToFriendlyString();
             string description = result.CheckModel?.State.Description;
             string duration = result.CheckModel?.State.ExecutionDuration.ToString();
+            string diagnosticsInfo = result.CheckModel?.State.DiagnosticsInfo;
 
-            var logRecord = String.Join(" | ", dateTime, check, success, status, errors, description, duration);
+            var logRecord = String.Join(" | ", dateTime, check, success, status, errors, description, duration, diagnosticsInfo);
 
             PerformSafeWrite(filePath, logRecord);
         }

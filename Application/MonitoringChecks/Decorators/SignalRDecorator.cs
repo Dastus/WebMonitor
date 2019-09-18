@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Monitor.Application.Interfaces;
 using Monitor.Application.MonitoringChecks.Models;
 using MediatR;
+using System.Diagnostics;
 
 namespace Monitor.Application.MonitoringChecks.Decorators
 {
@@ -22,11 +23,17 @@ namespace Monitor.Application.MonitoringChecks.Decorators
         {
             var result = await next();
 
+            var sw = new Stopwatch();//
+            sw.Start();//
+
             var commandResult = result as CommandResult;
             if (commandResult.Success)
             {
                 await _notifier.Notify(commandResult.CheckModel);
             }
+
+            sw.Stop();//
+            commandResult.CheckModel.State.DiagnosticsInfo += " SignalR: " + sw.ElapsedMilliseconds;
 
             return result;
         }

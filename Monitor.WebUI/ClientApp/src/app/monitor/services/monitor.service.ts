@@ -69,6 +69,7 @@ export class MonitorService {
       if (data && data.length) {
         data.forEach(check => {
           this._store.dispatch(new actions.UpdateCheck({ check: check }));
+          this._store.dispatch(new actions.ApplyFilters());
         })
       }
     });        

@@ -6,6 +6,8 @@ export const SET_CHECKS = '[Monitor] Set checks';
 export const UPDATE_CHECK = '[Monitor] Update check';
 export const RUN_CHECK = '[Monitor] Run check';
 export const ORDER_BY = '[Monitor] Order by';
+export const SHOW_OK_STATUS_CHECKS = '[Monitor] Show Ok status';
+export const APPLY_FILTERS = '[Monitor] Apply filters'
 export const NOOP = '[Monitor] Noop action';
 
 export class GetChecks implements Action {
@@ -38,6 +40,18 @@ export class OrderBy implements Action {
   constructor(public payload: { field: string }) { }
 }
 
+export class ShowOkStatusChecks implements Action {
+  readonly type = SHOW_OK_STATUS_CHECKS;
+
+  constructor(public payload: boolean) { }
+}
+
+export class ApplyFilters implements Action {
+  readonly type = APPLY_FILTERS;
+
+  constructor() { }
+}
+
 export class Noop implements Action {
   readonly type = NOOP;
 
@@ -51,6 +65,8 @@ export type Actions =
   | UpdateCheck
   | RunCheck
   | OrderBy
+  | ShowOkStatusChecks
+  | ApplyFilters
   | Noop
   ;
 

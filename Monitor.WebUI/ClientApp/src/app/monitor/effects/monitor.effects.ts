@@ -5,19 +5,21 @@ import { map, mergeMap, switchMap, catchError } from 'rxjs/operators';
 import * as monitorActions from '../actions/monitor.actions';
 import { MonitorService } from '../services/monitor.service';
 import { Action } from '@ngrx/store';
+import { Check } from '../models/check.model';
 
 @Injectable()
 export class MonitorEffects {
 
   @Effect()
-  getChecks$: Observable<Action> = this.actions$.pipe(
-    ofType(monitorActions.GET_CHECKS),
-    map(action => action as monitorActions.GetChecks),
-    mergeMap((action: monitorActions.GetChecks) => {
-      return this._monitorService.getChecks(action.payload.environment).pipe(map(checks => {
-        return new monitorActions.SetChecks({ checks: checks });
-      }));
-    })
+  getChecks$: Observable<Action> = this.actions$.ofType(monitorActions.GET_CHECKS).pipe(
+      switchMap((action: monitorActions.GetChecks)=> {
+        return this._monitorService.getChecks(action.payload.environment).pipe(
+          switchMap((checks: Check[]) => [
+            new monitorActions.SetChecks({ checks: checks }),
+            new monitorActions.ApplyFilters()
+          ])
+        )
+      })
   );
 
   @Effect()

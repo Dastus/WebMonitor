@@ -6,14 +6,15 @@ using Monitor.Application.Interfaces;
 using System.Collections.Generic;
 using Monitor.Application.MonitoringChecks.Extensions;
 using Monitor.Application.MonitoringChecks.Helpers;
+using System.Net.Http;
 
 namespace Monitor.Application.MonitoringChecks
 {
-    public class MetatagsCheck
+    public class CategoryMetatagsCheck
     {
         private readonly IHttpRequestService _httpService;
 
-        public MetatagsCheck(IHttpRequestService httpService)
+        public CategoryMetatagsCheck(IHttpRequestService httpService)
         {
             _httpService = httpService;
         }
@@ -22,6 +23,7 @@ namespace Monitor.Application.MonitoringChecks
         {
             var result = new Check{ Settings = settings };
             result.State.LastCheckTime = DateTime.Now;
+            var requestTimeout = TimeSpan.FromSeconds(45);
 
             string address = new EnvironmentHelper().GetEnvironmentUrl(settings.EnvironmentId) + "/category/shiny-id49-3";
 
@@ -31,7 +33,7 @@ namespace Monitor.Application.MonitoringChecks
                 var errors = new List<string>();
 
                 var startTime = DateTime.Now;
-                var htmlResult = await _httpService.GetHtmlStructure(address, TimeSpan.FromSeconds(60));
+                var htmlResult = await _httpService.GetHtmlStructureAsGoogleBot(address, requestTimeout);
                 var endTime = DateTime.Now;
 
                 var title = htmlResult.GetTitle();
@@ -53,6 +55,13 @@ namespace Monitor.Application.MonitoringChecks
                 if (keywords != "шины")
                 {
                     errors.Add("'keywords' tag content incorrect: " + keywords);
+                }
+
+                var description = htmlResult.GetMetaTagContent("description");
+
+                if (description != "Хотите купить шины? У нас вы можете приобрести шины хорошего качества. Сайт autodoc.ua - большой выбор з/ч и сертифицированные товары.")
+                {
+                    errors.Add("'description' tag content incorrect: " + description);
                 }
 
                 var canonicalLink = htmlResult.GetLinkContent("canonical");
@@ -86,12 +95,22 @@ namespace Monitor.Application.MonitoringChecks
                 if (execTime > TimeSpan.FromSeconds(warningThreshold))
                 {
                     result.State.Status = StatusesEnum.WARNING;
-                    result.State.Description = "Время ответа больше порога " + warningThreshold + " сек: " + execTime.Seconds;
+                    result.State.Description = string.Format("Время ответа больше порога {0} сек: {1:0.00}", warningThreshold, execTime.TotalSeconds);
                     return result;
                 }
 
                 result.State.Status = StatusesEnum.OK;
                 result.State.Description = "Проблем не обнаружено";
+            }
+            catch (TaskCanceledException)
+            {
+                result.State.Status = StatusesEnum.CRITICAL;
+                result.State.Description = string.Format("Превышен интервал выполнения запроса: {0} сек", requestTimeout.Seconds);
+            }
+            catch (HttpRequestException ex)
+            {
+                result.State.Status = StatusesEnum.CRITICAL;
+                result.State.Description = "Ошибка http-запроса: " + ex.Message;
             }
             catch
             {

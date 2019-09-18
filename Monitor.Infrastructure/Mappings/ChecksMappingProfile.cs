@@ -19,7 +19,8 @@ namespace Monitor.Infrastructure.Mappings
                 .ForMember(dest => dest.Type, opts => opts.MapFrom(src => src.Settings.Type))
                 .ForMember(dest => dest.Service, opts => opts.MapFrom(src => src.Settings.Service))
                 .ForMember(dest => dest.EnvironmentId, opts => opts.MapFrom(src => src.Settings.EnvironmentId))
-                .ForMember(dest => dest.Priority, opts => opts.MapFrom(src => src.Settings.Priority));
+                .ForMember(dest => dest.Priority, opts => opts.MapFrom(src => src.Settings.Priority))
+                .ForMember(dest => dest.CheckFullDescription, opts => opts.MapFrom(src => src.Settings.CheckFullDescription));
         }
     }
 }

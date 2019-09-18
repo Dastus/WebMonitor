@@ -2,17 +2,23 @@ import { createSelector } from '@ngrx/store';
 import * as monitor from "../actions/monitor.actions";
 import { Check } from '../models/check.model';
 import { EnvironmentsEnum } from '../models/environments.enum';
+import { CheckFilters } from '../models/check-filter.model';
+import { StatusesEnum } from '../models/statuses.enum';
 
 export interface State {
-  checks: Check[];
+  checks: Check[],
+  allChecks: Check[],
   lastSortProperty: string,
-  sortOrder: string
+  sortOrder: string,
+  filters: CheckFilters
 }
 
 const initialState: State = {
   checks: [],
+  allChecks: [],
   lastSortProperty: '',
-  sortOrder: 'ASC'
+  sortOrder: 'ASC',
+  filters: new CheckFilters()
 }
 
 export function monitorReducer(state = initialState, action: monitor.Actions): State {
@@ -33,7 +39,8 @@ export function monitorReducer(state = initialState, action: monitor.Actions): S
 
       return {
         ...state,
-        checks: newList
+        checks: newList,
+        allChecks: newList
       }
     }
 
@@ -62,6 +69,23 @@ export function monitorReducer(state = initialState, action: monitor.Actions): S
         sortOrder: sortOrder
       }    
     }
+
+    case monitor.SHOW_OK_STATUS_CHECKS: {
+        return {
+          ...state,
+          filters: {
+            ...state.filters,
+            showOkStatus: action.payload
+          }
+        }
+    }
+
+    case monitor.APPLY_FILTERS: {
+        return {
+          ...state,        
+          checks: getFilteredChecks(state.allChecks, state.filters)
+        }
+    }    
 
     default: {
       return state;
@@ -125,6 +149,13 @@ function convertToEnvironmentId(environment: string): number {
       return null;
   }
 } 
+
+function getFilteredChecks(fullList: Check[], filters: CheckFilters): Check[] {
+  if (filters.showOkStatus) {
+    return fullList;
+  }
+  return fullList.filter(x => x.status != StatusesEnum.OK);
+}
 
 export const getProdChecks = (state: State) =>
   state.checks.filter(x => x.environmentId == EnvironmentsEnum.Prod);

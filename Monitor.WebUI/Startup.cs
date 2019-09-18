@@ -27,6 +27,7 @@ using System;
 using AutoMapper;
 using Monitor.Infrastructure.Mappings;
 using Monitor.Infrastructure.ExternalUnitTests;
+using Monitor.Infrastructure.Notifications;
 
 namespace Monitor.WebUI
 {
@@ -39,6 +40,7 @@ namespace Monitor.WebUI
 
         public IConfiguration Configuration { get; }
 
+        //TODO: configure Lamar "WithDefaultConventions" to remove unneeded registrations 
         public void ConfigureContainer(ServiceRegistry services)
         {
             services.AddSignalR();
@@ -57,22 +59,23 @@ namespace Monitor.WebUI
             services.AddSingleton<IChecksRepository, MemoryCheckRepository>();
             services.AddSingleton<IScheduleRepository, MemoryScheduleRepository>();
             services.AddSingleton<IHostedService, CheckRegistrator>();
-            services.AddSingleton<ILoggerService, LoggerService>();
+            services.AddSingleton<ILoggerService, TextLoggerService>();
+            services.AddSingleton<IHttpRequestService, HttpRequestService>();
+            services.AddSingleton<INotificationsService, NotificationsService>();
 
-            services.AddTransient<IHttpRequestService, HttpRequestService>();
             services.AddTransient<ISignalRNotificationsService, SignalRNotificationsService>();
             services.AddTransient<IResultHandlingService, ResultHandlingService>();
             services.AddTransient<IUnitTestsProcessorService, UnitTestsProcessorService>();
-
             services.AddTransient<IWebDriversFactory, SeleniumDriversFactory>();
             services.AddTransient<ITelegramNotificationService, TelegramService>();
 
-            services.AddMediatR(typeof(HomePageCheckHandler).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(HomePageCheckHandler).GetTypeInfo().Assembly);            
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggerDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandExceptionsDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandResultHandleDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SignalRDecorator<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(NotificationsDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DataStoreDecorator<,>));
 
             services.Configure<TelegramNotificationSettings>(Configuration.GetSection("TelegramNotificationSettings"));

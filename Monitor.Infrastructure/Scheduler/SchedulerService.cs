@@ -12,6 +12,8 @@ namespace Monitor.Infrastructure.Scheduler
         private IScheduleRepository _scheduleRepository;
         private ICommandsProcessor _processor;
         private ConcurrentDictionary<CheckTypeEnum, CancellationTokenSource> _cancellationTokensMap = new ConcurrentDictionary<CheckTypeEnum, CancellationTokenSource>();
+        private ConcurrentDictionary<CheckTypeEnum, string> _schedulesMap = new ConcurrentDictionary<CheckTypeEnum, string>();
+
 
         public SchedulerService(
             ICommandsProcessor processor,
@@ -26,6 +28,7 @@ namespace Monitor.Infrastructure.Scheduler
         {
             var cancellationTokenSource = new CancellationTokenSource();
             _cancellationTokensMap.TryAdd(check.Type, cancellationTokenSource);
+            _schedulesMap.TryAdd(check.Type, check.NormalSchedule);
             var checkProcessor = new ScheduledTask(_processor);
             await checkProcessor.ProcessCheck(check.Type, check.NormalSchedule, cancellationTokenSource);
         }
@@ -44,6 +47,43 @@ namespace Monitor.Infrastructure.Scheduler
             foreach (var token in _cancellationTokensMap.Values)
             {
                 token.Cancel();
+            }
+        }
+
+        public async Task ReSchedule(CheckSettings settings, StatusesEnum status)
+        {
+            var newSchedule = GetSchedule(settings, status);
+            var currentSchedule = "";
+            _schedulesMap.TryGetValue(settings.Type, out currentSchedule);
+
+            if (currentSchedule == newSchedule)
+            {
+                return;
+            }
+
+            CancellationTokenSource cts = null;
+            _cancellationTokensMap.TryGetValue(settings.Type, out cts);
+            cts.Cancel();
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var ctsUpd = _cancellationTokensMap.TryUpdate(settings.Type, cancellationTokenSource, cts);
+            var schUpd = _schedulesMap.TryUpdate(settings.Type, newSchedule, currentSchedule);                       
+
+            var checkProcessor = new ScheduledTask(_processor);
+            await checkProcessor.ProcessCheck(settings.Type, newSchedule, cancellationTokenSource);
+        }
+
+        private string GetSchedule(CheckSettings settings, StatusesEnum status)
+        {
+            switch (status)
+            {
+                case StatusesEnum.CRITICAL:
+                    return settings.CriticalSchedule;
+                case StatusesEnum.WARNING:
+                    return settings.WarningSchedule;
+                case StatusesEnum.OK:
+                default:
+                    return settings.NormalSchedule;
             }
         }
 

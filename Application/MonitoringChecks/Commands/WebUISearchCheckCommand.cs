@@ -11,7 +11,8 @@ namespace Monitor.Application.MonitoringChecks.Commands
             Priority = PrioritiesEnum.Critical,
             Service = "Web UI search",
             Type = CheckTypeEnum.WebUISearchProd,
-            EnvironmentId = (int)EnvironmentsEnum.Prod
+            EnvironmentId = (int)EnvironmentsEnum.Prod,
+            CheckFullDescription = "Selenium-тест. Поиск 'ос90'"
         };
 
     }

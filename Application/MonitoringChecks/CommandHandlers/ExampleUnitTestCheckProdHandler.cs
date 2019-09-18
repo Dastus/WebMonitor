@@ -4,8 +4,6 @@ using Monitor.Application.MonitoringChecks.ChecksLogic;
 using Monitor.Application.MonitoringChecks.Commands;
 using Monitor.Application.MonitoringChecks.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +26,8 @@ namespace Monitor.Application.MonitoringChecks.CommandHandlers
 
             var result = new CommandResult { Success = true };
             var check = new UnitTestCheck(_processor);
-            result.CheckModel = await check.RunUnitTest(request.CheckSettings, testName, path);
+            result.CheckModel = await check.RunMsUnitTest(request.CheckSettings, testName, path);
+            //result.CheckModel.State.Status = StatusesEnum.CRITICAL;//test
             return result;
         }
     }

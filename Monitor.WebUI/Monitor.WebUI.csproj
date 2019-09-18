@@ -33,15 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\app\monitor\actions\monitor.actions.ts" />
-    <None Remove="ClientApp\src\app\monitor\effects\monitor.effects.ts" />
-    <None Remove="ClientApp\src\app\monitor\models\environments.enum.ts" />
-    <None Remove="ClientApp\src\app\monitor\reducers\index.ts" />
-    <None Remove="ClientApp\src\app\monitor\reducers\monitor.reducer.ts" />
-    <None Remove="ClientApp\src\app\redux-store\index.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Application\Monitor.Application.csproj" />
     <ProjectReference Include="..\Monitor.Infrastructure\Monitor.Infrastructure.csproj" />
     <ProjectReference Include="..\Monitor.Persistence\Monitor.Persistence.csproj" />
@@ -51,14 +42,6 @@
     <Folder Include="StaticFiles\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\app\monitor\actions\monitor.actions.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\monitor\effects\monitor.effects.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\monitor\models\environments.enum.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\monitor\reducers\index.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\monitor\reducers\monitor.reducer.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\redux-store\index.ts" />
-  </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

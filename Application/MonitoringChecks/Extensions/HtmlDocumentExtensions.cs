@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Monitor.Application.MonitoringChecks.Extensions
 {
@@ -31,6 +32,19 @@ namespace Monitor.Application.MonitoringChecks.Extensions
             var content = targetNode?.Attributes.Where(a => a.Name == "href").FirstOrDefault()?.Value;
 
             return content;
+        }
+
+        public static List<HtmlNode> FindNodesByName(this HtmlDocument htmlResult, string nodeName)
+        {
+            var nodes = htmlResult.DocumentNode.Descendants(nodeName).ToList();
+            return nodes;
+        }
+
+        public static List<HtmlNode> FindNodesByClassName(this HtmlDocument htmlResult, string nodeName, string className)
+        {
+            var nodes = htmlResult.DocumentNode.Descendants(nodeName)
+                .Where( e => e.GetAttributeValue("class", "") == className).ToList();
+            return nodes;
         }
     }
 }

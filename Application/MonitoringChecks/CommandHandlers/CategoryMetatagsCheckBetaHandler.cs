@@ -9,20 +9,20 @@ using Monitor.Application.Interfaces;
 
 namespace Monitor.Application.MonitoringChecks.CommandHandlers
 {
-    public class MetatagsCheckBetaHandler: IRequestHandler<MetatagsCheckBetaCommand, CommandResult>
+    public class CategoryMetatagsCheckBetaHandler: IRequestHandler<CategoryMetatagsCheckBetaCommand, CommandResult>
     {
         private IHttpRequestService _httpService;
 
-        public MetatagsCheckBetaHandler(IHttpRequestService httpService)
+        public CategoryMetatagsCheckBetaHandler(IHttpRequestService httpService)
         {
             _httpService = httpService ?? throw new ArgumentNullException(nameof(httpService));
         }
 
-        public async Task<CommandResult> Handle(MetatagsCheckBetaCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResult> Handle(CategoryMetatagsCheckBetaCommand request, CancellationToken cancellationToken)
         {
             var result = new CommandResult();
             result.Success = true;
-            var check = new MetatagsCheck(_httpService);
+            var check = new CategoryMetatagsCheck(_httpService);
             result.CheckModel = await check.CheckMetaInfo(request.CheckSettings);
 
             return result;

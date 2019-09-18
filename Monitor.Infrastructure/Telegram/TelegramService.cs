@@ -35,10 +35,13 @@ namespace Monitor.Infrastructure.Telegram
 
         private string GetText(Check check)
         {
-            return "Проверка: " + check.Settings.Service + ", ID: " + check.Settings.Type 
+            return GetEmojiCode(check) + " Проверка: " + check.Settings.Service + ", ID: " + check.Settings.Type 
                 + "\n Статус: " + check.State.Status.ToFriendlyString() 
                 + "\n Время срабатывания: " + check.State.StatusChangeTime.ToString()
                 + "\n Описание: " + check.State.Description;
         }
+
+        private string GetEmojiCode(Check check) => (check.State.Status == StatusesEnum.CRITICAL) ? "\U0000274c" : "\U00002714";
+
     }
 }

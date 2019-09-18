@@ -31,7 +31,7 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
             };
             AutodocSearchResult productResponse = null;
 
-            var address = new EnvironmentHelper().GetEnvironmentUrl(environmentId);
+            var address = new EnvironmentHelper().GetApiUrl(environmentId);
             var query = $"{address}/api/search/filtered";    
             var jsonSearchModel = JsonConvert.SerializeObject(model);
             var requestModel = new SearchRequestModel { SearchParametersJson = jsonSearchModel };
@@ -45,8 +45,8 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
                 var response = await client.PostAsync(query, content);
                 
                 if (!response.IsSuccessStatusCode)
-                {                    
-                    check.State.Description = "Полученный статус-код: " + check.State.Status;
+                {
+                    check.State.Description = "Полученный статус-код: " + response.StatusCode;
                     return check;
                 }
 

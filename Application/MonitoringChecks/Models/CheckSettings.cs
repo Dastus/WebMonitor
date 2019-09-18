@@ -10,6 +10,7 @@ namespace Monitor.Application.MonitoringChecks.Models
         public CheckTypeEnum Type { get; set; }
         public PrioritiesEnum Priority { get; set; }
         public string Service { get; set; }
+        public string CheckFullDescription { get; set; }
 
         //schedules are in UNIX cron format
         public string NormalSchedule { get; set; } = "*/10 * * * *"; //every 10 minutes;
