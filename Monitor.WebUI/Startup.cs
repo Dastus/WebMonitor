@@ -60,6 +60,7 @@ namespace Monitor.WebUI
             services.AddSingleton<IScheduleRepository, MemoryScheduleRepository>();
             services.AddSingleton<IHostedService, CheckRegistrator>();
             services.AddSingleton<ILoggerService, TextLoggerService>();
+            services.AddSingleton<ILogStashService, LogStashService>();
             services.AddSingleton<IHttpRequestService, HttpRequestService>();
             services.AddSingleton<INotificationsService, NotificationsService>();
 

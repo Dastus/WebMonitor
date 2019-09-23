@@ -25,7 +25,7 @@ namespace Monitor.Infrastructure.Logger
 
         public TextLoggerService(IOptions<LoggerSettings> settings)
         {
-            _settings = settings ?? throw new ArgumentNullException("logger settings is empty");
+            _settings = settings ?? throw new ArgumentNullException("logger settings are empty");
         }
 
         public async Task SaveLog(CommandResult result)

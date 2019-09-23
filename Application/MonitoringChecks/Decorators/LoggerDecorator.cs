@@ -13,10 +13,12 @@ namespace Monitor.Application.MonitoringChecks.Decorators
         where  TIn: ICommand<TOut>
     {
         private readonly ILoggerService _logger;
+        private readonly ILogStashService _logStash;
         
-        public LoggerDecorator(ILoggerService logger)
+        public LoggerDecorator(ILoggerService logger, ILogStashService logStash)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logStash = logStash ?? throw new ArgumentNullException(nameof(logStash));
         }
 
         public async Task<CommandResult> Handle(ICommand<CommandResult> request, CancellationToken cancellationToken, RequestHandlerDelegate<CommandResult> next)
@@ -28,7 +30,12 @@ namespace Monitor.Application.MonitoringChecks.Decorators
                 var sw = new Stopwatch();//
                 sw.Start();//
 
-                await _logger.SaveLog(result as CommandResult);
+                var tasks = new Task[] {
+                    _logger.SaveLog(result as CommandResult),
+                    _logStash.SaveLog(result as CommandResult)
+                };
+
+                await Task.WhenAll(tasks);
 
                 sw.Stop();//
                 result.CheckModel.State.DiagnosticsInfo += " Logger: " + sw.ElapsedMilliseconds;
