@@ -27,7 +27,7 @@ namespace Monitor.Application.MonitoringChecks.Helpers
                 case EnvironmentsEnum.Prod:
                     return @"https://autodoc.ua";
                 case EnvironmentsEnum.Beta:
-                    return @"https://beta.autodoc.ua";//@"https://beta.api-backend.autodoc.ua";
+                    return @"https://beta.api-backend.autodoc.ua"; //@"https://beta.autodoc.ua";//
                 default:
                     throw new ArgumentException($"Incorrect {nameof(environmentId)} specified");
             }

@@ -59,7 +59,7 @@ namespace Monitor.Application.MonitoringChecks
 
                 var description = htmlResult.GetMetaTagContent("description");
 
-                if (description != "Хотите купить шины? У нас вы можете приобрести шины хорошего качества. Сайт autodoc.ua - большой выбор з/ч и сертифицированные товары.")
+                if (string.IsNullOrWhiteSpace(description))
                 {
                     errors.Add("'description' tag content incorrect: " + description);
                 }

@@ -7,28 +7,29 @@ using System;
 
 namespace Monitor.Application.MonitoringChecks.Commands
 {
-    public class WebUISearchCheckBetaCommand : IRequest<CommandResult>, ICommand<CommandResult>
+    public class WebUISearchCheckProdCommand : IRequest<CommandResult>, ICommand<CommandResult>
     {
         public CheckSettings CheckSettings => new CheckSettings
         {
             Priority = PrioritiesEnum.Critical,
             Service = "Web UI search",
-            Type = CheckTypeEnum.WebUISearchBeta,
-            EnvironmentId = (int)EnvironmentsEnum.Beta,
+            Type = CheckTypeEnum.WebUISearchProd,
+            EnvironmentId = (int)EnvironmentsEnum.Prod,
             CheckFullDescription = "Selenium-тест. Поиск 'ос90'"
         };
+
     }
 
-    public class WebUISearchCheckBetaHandler : IRequestHandler<WebUISearchCheckBetaCommand, CommandResult>
+    public class WebUISearchCheckHandler : IRequestHandler<WebUISearchCheckProdCommand, CommandResult>
     {
         private IWebDriversFactory _driversFactory;
 
-        public WebUISearchCheckBetaHandler(IWebDriversFactory driversFactory)
+        public WebUISearchCheckHandler(IWebDriversFactory driversFactory)
         {
             _driversFactory = driversFactory ?? throw new ArgumentNullException(nameof(driversFactory));
         }
 
-        public async Task<CommandResult> Handle(WebUISearchCheckBetaCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResult> Handle(WebUISearchCheckProdCommand request, CancellationToken cancellationToken)
         {
             var result = new CommandResult();
             result.Success = true;

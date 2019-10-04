@@ -41,7 +41,7 @@ namespace Monitor.Infrastructure.Telegram
                 + "\n Описание: " + check.State.Description;
         }
 
-        private string GetEmojiCode(Check check) => (check.State.Status == StatusesEnum.CRITICAL) ? "\U0000274c" : "\U00002714";
+        private string GetEmojiCode(Check check) => (check.State.Status == StatusesEnum.CRITICAL) ? "\U0000274c" : "\U00002705";
 
     }
 }

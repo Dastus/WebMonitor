@@ -30,7 +30,7 @@ namespace Monitor.Infrastructure.Scheduler
             _cancellationTokensMap.TryAdd(check.Type, cancellationTokenSource);
             _schedulesMap.TryAdd(check.Type, check.NormalSchedule);
             var checkProcessor = new ScheduledTask(_processor);
-            await checkProcessor.ProcessCheck(check.Type, check.NormalSchedule, cancellationTokenSource);
+            await checkProcessor.ProcessCheck(check.Type, check.NormalSchedule, cancellationTokenSource.Token);
         }
 
         public void RemoveFromSchedule(CheckSettings check)
@@ -70,7 +70,7 @@ namespace Monitor.Infrastructure.Scheduler
             var schUpd = _schedulesMap.TryUpdate(settings.Type, newSchedule, currentSchedule);                       
 
             var checkProcessor = new ScheduledTask(_processor);
-            await checkProcessor.ProcessCheck(settings.Type, newSchedule, cancellationTokenSource);
+            await checkProcessor.ProcessCheck(settings.Type, newSchedule, cancellationTokenSource.Token);
         }
 
         private string GetSchedule(CheckSettings settings, StatusesEnum status)

@@ -44,19 +44,12 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
                     errors.Add("breadcrumbs element not found");
                 }
 
-                var prodCrumbs = new List<string> {
+                var expectedCrumbs = new List<string> {
                     "href=\"/\"", //home
                     "href=\"/category/dvigatel-sistemy-i-komponenty-id1-3\"", //Двигатель, системы и компоненты
                     "href=\"/category/sistema-smazki-id57-3\"", //Система смазки      
                     "href=\"/category/maslyanyj-filtr-id170-3\"", //Масляный фильтр
                 };
-                var betaCrumbs = new List<string> {
-                    "href=\"/\"", //home
-                    "href=\"/category/dvigatel-sistemy-i-komponenty-id1-3\"", //Двигатель, системы и компоненты
-                    "href=\"/category/maslyanyj-nasos-id57-3\"", //Система смазки  
-                    "href=\"/category/maslyanyj-filtr-id170-3\"" //Масляный фильтр
-                };
-                var expectedCrumbs = (settings.EnvironmentId == (int)EnvironmentsEnum.Prod) ? prodCrumbs : betaCrumbs;
 
                 var missingCrumbs = new List<string>() as IEnumerable<string>;
                 if (breadcrumbs !=null && !breadcrumbs.InnerHtml.ContainsAll(expectedCrumbs, out missingCrumbs))

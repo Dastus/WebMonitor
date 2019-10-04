@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Monitor.Application.Interfaces;
-using Monitor.Application.MonitoringChecks.CommandHandlers;
 using Monitor.Application.MonitoringChecks.Decorators;
 using Monitor.Infrastructure.Http;
 using Monitor.Infrastructure.Scheduler;
@@ -28,6 +27,7 @@ using AutoMapper;
 using Monitor.Infrastructure.Mappings;
 using Monitor.Infrastructure.ExternalUnitTests;
 using Monitor.Infrastructure.Notifications;
+using Monitor.Application.MonitoringChecks.Commands;
 
 namespace Monitor.WebUI
 {

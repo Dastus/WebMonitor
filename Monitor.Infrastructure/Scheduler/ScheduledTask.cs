@@ -19,28 +19,32 @@ namespace Monitor.Infrastructure.Scheduler
             _processor = processor ?? throw new ArgumentNullException(nameof(processor));
         }
 
-        public async Task ProcessCheck(CheckTypeEnum checkType, string schedule, CancellationTokenSource cancellationToken)
+        public async Task ProcessCheck(CheckTypeEnum checkType, string schedule, CancellationToken cancellationToken)
         {
             var initialDelayTime = TimeSpan.FromMinutes(0);
 
             await Task.Delay(initialDelayTime);
-            using (cancellationToken)
+
+            while (!cancellationToken.IsCancellationRequested)
             {
-                while (!cancellationToken.IsCancellationRequested)
+                CronExpression expression = CronExpression.Parse(schedule);
+                var nextRunTime = expression.GetNextOccurrence(DateTime.UtcNow);
+                var delay = nextRunTime - DateTime.UtcNow;
+
+                if (delay == null)
                 {
-                    CronExpression expression = CronExpression.Parse(schedule);
-                    var nextRunTime = expression.GetNextOccurrence(DateTime.UtcNow);
-                    var delay = nextRunTime - DateTime.UtcNow;
-
-                    if (delay == null)
-                    {
-                        return;
-                    }
-
-                    await _processor.ExecuteCommand(checkType);
-                    await Task.Delay(delay.Value);
+                    return;
                 }
-            }      
+
+                await _processor.ExecuteCommand(checkType);
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                await Task.Delay(delay.Value);
+            }     
         }
     }
 }
