@@ -39,7 +39,7 @@ namespace Monitor.Application.MonitoringChecks
                 var title = htmlResult.GetTitle();
                 var expectedTitle = (settings.EnvironmentId == (int)EnvironmentsEnum.Prod) 
                     ? "Фильтр масляный двигателя lanos, aveo, lacetti, nubira, nexia (пр-во knecht-mahle). Масляный фильтр OC90 KNECHT-MAHLE | autodoc.ua" 
-                    : "Фильтр масляный lanos, aveo, lacetti, nubira, nexia (пр-во knecht-mahle). Масляный фильтр OC90 KNECHT | autodoc.ua"; 
+                    : "Фильтр масляный двигателя lanos, aveo, lacetti, nubira, nexia (пр-во knecht-mahle). Масляный фильтр OC90 KNECHT-MAHLE | autodoc.ua"; 
 
                 if (title != expectedTitle)
                 {
@@ -56,7 +56,7 @@ namespace Monitor.Application.MonitoringChecks
                 var keywords = htmlResult.GetMetaTagContent("keywords");
                 var expectedKeywords = (settings.EnvironmentId == (int)EnvironmentsEnum.Prod)
                     ? "фильтр масляный двигателя lanos, aveo, lacetti, nubira, nexia (пр-во knecht-mahle), масляный фильтр, OC90, knecht-mahle"
-                    : "фильтр масляный lanos, aveo, lacetti, nubira, nexia (пр-во knecht-mahle), масляный фильтр, OC90, knecht";
+                    : "фильтр масляный двигателя lanos, aveo, lacetti, nubira, nexia (пр-во knecht-mahle), масляный фильтр, OC90, knecht-mahle";
 
                 if (keywords != expectedKeywords)
                 {
@@ -66,7 +66,7 @@ namespace Monitor.Application.MonitoringChecks
                 var description = htmlResult.GetMetaTagContent("description");
                 var expectedDescription = (settings.EnvironmentId == (int)EnvironmentsEnum.Prod)
                     ? "Желаете приобрести масляный фильтр OC90 KNECHT-MAHLE? В нашем интернет-магазине вы можете приобрести Фильтр масляный двигателя LANOS, AVEO, LACETTI, NUBIRA, NEXIA (пр-во KNECHT-MAHLE) хорошего качества. На autodoc.ua вы без трудностей сможете подобрать масляный фильтр."
-                    : "Искали масляный фильтр OC90 KNECHT? В нашем интернет-магазине вы можете приобрести Фильтр масляный LANOS, AVEO, LACETTI, NUBIRA, NEXIA (пр-во Knecht-Mahle) отличного качества. На сайте autodoc.ua вы быстро сумеете выбрать масляный фильтр.";
+                    : "Желаете приобрести масляный фильтр OC90 KNECHT-MAHLE? В нашем интернет-магазине вы можете приобрести Фильтр масляный двигателя LANOS, AVEO, LACETTI, NUBIRA, NEXIA (пр-во KNECHT-MAHLE) хорошего качества. На autodoc.ua вы без трудностей сможете подобрать масляный фильтр.";
 
                 if (description != expectedDescription)
                 {

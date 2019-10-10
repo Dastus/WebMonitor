@@ -29,6 +29,7 @@ namespace Monitor.WebUI
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+            .UseKestrel()
             .UseLamar()
             .UseStartup<Startup>();
 

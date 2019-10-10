@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 
 namespace Monitor.Infrastructure.ExternalUnitTests.MsTest
 {
-    public class MsTestsProcessor
+    public class VsTestsProcessor
     {
         public async Task<CheckState> ExecuteUnitTest(string testName, string path)
         {
@@ -40,7 +40,8 @@ namespace Monitor.Infrastructure.ExternalUnitTests.MsTest
 
             try
             {
-                var result = ParseTestResults(Path.Combine(path, "TestResults", testName));
+                var dirPath = new FileInfo(path).DirectoryName;
+                var result = ParseTestResults(Path.Combine(dirPath, "TestResults", testName + ".trx"));
                 testResult = result?.Results.FirstOrDefault();
             }
             catch (Exception ex)
@@ -62,25 +63,16 @@ namespace Monitor.Infrastructure.ExternalUnitTests.MsTest
             return checkState;
         }
 
-        private async Task RunTestAsync(string testName, string path)
+        private async Task RunTestAsync(string testName, string dllPath)
         {
             var commandRunner = new ConsoleCommandsRunner();
+            var logPath = Path.Combine(new FileInfo(dllPath).DirectoryName, "TestResults", testName + ".trx");
 
             string command = "CMD.exe";
-            //string arguments = String.Format("/C dotnet test {0} --no-build --filter DisplayName~{1} --logger \"trx;LogFileName={1}\"", path, testName);
-            string arguments = String.Format("/C dotnet test {0} --no-build --filter Name={1} --logger \"trx;LogFileName={1}\"", path, testName);
+            string arguments = String.Format("/C dotnet vstest {0} --Tests:\"{1}\" --logger:\"trx;LogFileName={2}\"", dllPath, testName, logPath);
 
             await commandRunner.RunProcessAsync(command, arguments);
         }
-
-        //private void RunAllTests(string path)
-        //{
-        //    string strCmdText = String.Format(@"/C dotnet test {0} --logger:trx", path);
-        //    var cmd = Process.Start("CMD.exe", strCmdText);
-        //    cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-        //    cmd.WaitForExit();
-        //}
 
         private TestRun ParseTestResults(string path)
         {
@@ -94,41 +86,7 @@ namespace Monitor.Infrastructure.ExternalUnitTests.MsTest
             return results;
         }
 
-        //private TestRun ParseTestResults(string path)
-        //{
-        //    var file = GetLatestFile(path);
+        //private string ExcludeDllFileFromPath(string path) => new FileInfo(path).DirectoryName;//path.Substring(0, path.LastIndexOf("/"));
 
-        //    var deserializer = new XmlSerializer(typeof(TestRun));
-        //    TextReader textReader = new StreamReader(file.FullName);
-        //    var results = (TestRun)deserializer.Deserialize(textReader);
-        //    textReader.Close();
-
-        //    return results;
-        //}
-
-        //private FileInfo GetLogFile(string path, string testName)
-        //{
-        //    var files = new DirectoryInfo(Path.Combine(path, "TestResults")).GetFiles();
-
-        //    return files.Where(f => f.Name == testName).LastOrDefault();
-        //}
-
-        //private FileInfo GetLatestFile(string path)
-        //{
-        //    var files = new DirectoryInfo(Path.Combine(path, "TestResults")).GetFiles();
-        //    FileInfo file = null;
-
-        //    var lastUpdated = DateTime.MinValue;
-        //    foreach (var f in files)
-        //    {
-        //        if (f.LastWriteTime > lastUpdated)
-        //        {
-        //            file = f;
-        //            lastUpdated = file.LastWriteTime;
-        //        }
-        //    }
-
-        //    return file;
-        //}
     }
 }

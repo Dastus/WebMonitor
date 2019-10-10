@@ -2,6 +2,7 @@
 using Monitor.Application.MonitoringChecks.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Monitor.Application.Interfaces
@@ -12,5 +13,7 @@ namespace Monitor.Application.Interfaces
         Task<HtmlDocument> GetHtmlStructureAsGoogleBot(string url, TimeSpan timeout);
         Task<WebPageLoadResult> GetPageLoadResult(string url, TimeSpan timeout);
         Task<WebPageLoadResult> GetPageLoadResultAsGoogleBot(string url, TimeSpan timeout);
+        Task<HttpResponseMessage> PerformGetRequest(string url, TimeSpan timeout, IDictionary<string, string> requestModel = null);
+        Task<HttpResponseMessage> PerformPostRequest(string url, TimeSpan timeout, object requestModel = null);
     }
 }

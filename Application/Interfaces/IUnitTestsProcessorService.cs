@@ -5,7 +5,8 @@ namespace Monitor.Application.Interfaces
 {
     public interface IUnitTestsProcessorService
     {
-        Task<CheckState> ExecuteMsTestUnitTest(string testName, string pathToProject);
+        Task<CheckState> ExecuteMsTest(string testName, string pathToProject);
         Task<CheckState> ExecuteNUnitTest(string testName, string pathToDll);
+        Task<CheckState> ExecuteVsTest(string testName, string pathToDll);
     }
 }

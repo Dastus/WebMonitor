@@ -8,7 +8,7 @@ namespace Monitor.Infrastructure.ExternalUnitTests
 {
     public class UnitTestsProcessorService : IUnitTestsProcessorService
     {
-        public async Task<CheckState> ExecuteMsTestUnitTest(string testName, string pathToProject)
+        public async Task<CheckState> ExecuteMsTest(string testName, string pathToProject)
         {
             var processor = new MsTestsProcessor();
             return await processor.ExecuteUnitTest(testName, pathToProject);
@@ -17,6 +17,12 @@ namespace Monitor.Infrastructure.ExternalUnitTests
         public async Task<CheckState> ExecuteNUnitTest(string testName, string pathToDll)
         {
             var processor = new NUnitTestsProcessor();
+            return await processor.ExecuteUnitTest(testName, pathToDll);
+        }
+
+        public async Task<CheckState> ExecuteVsTest(string testName, string pathToDll)
+        {
+            var processor = new VsTestsProcessor();
             return await processor.ExecuteUnitTest(testName, pathToDll);
         }
     }
