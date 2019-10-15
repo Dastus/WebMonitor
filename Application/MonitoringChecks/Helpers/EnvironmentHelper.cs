@@ -25,7 +25,7 @@ namespace Monitor.Application.MonitoringChecks.Helpers
             switch ((EnvironmentsEnum)environmentId)
             {
                 case EnvironmentsEnum.Prod:
-                    return @"https://autodoc.ua";
+                    return @"https://api-backend.autodoc.ua";
                 case EnvironmentsEnum.Beta:
                     return @"https://beta.api-backend.autodoc.ua"; //@"https://beta.autodoc.ua";//
                 default:
