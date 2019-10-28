@@ -13,15 +13,6 @@ namespace Monitor.WebUI
 {
     public class Program
     {
-        //public static void Main(string[] args)
-        //{
-        //    CreateWebHostBuilder(args).Build().Run();
-        //}
-
-        //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        //    WebHost.CreateDefaultBuilder(args)
-        //    .UseStartup<Startup>();
-
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
@@ -31,24 +22,7 @@ namespace Monitor.WebUI
             WebHost.CreateDefaultBuilder(args)
             .UseKestrel()
             .UseLamar()
+            .UseUrls("https://localhost:44320")
             .UseStartup<Startup>();
-
-        //public static void Main(string[] args)
-        //{
-        //    var builder = new WebHostBuilder();
-        //    builder
-        //        // Replaces the built in DI container
-        //        // with Lamar
-        //        .UseLamar()
-
-        //        // Normal ASP.Net Core bootstrapping
-        //        .UseUrls("https://localhost:44320/")
-        //        .UseKestrel()
-        //        .UseStartup<Startup>();
-
-        //    builder.Start();
-
-        //}
-
     }
 }
