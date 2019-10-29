@@ -27,10 +27,8 @@ namespace Monitor.Application.MonitoringChecks.Decorators
             sw.Start();//
 
             var commandResult = result as CommandResult;
-            if (commandResult.Success)
-            {
-                await _notifier.Notify(commandResult.CheckModel);
-            }
+
+            await _notifier.Notify(commandResult.CheckModel);
 
             sw.Stop();//
             commandResult.CheckModel.State.DiagnosticsInfo += " SignalR: " + sw.ElapsedMilliseconds;

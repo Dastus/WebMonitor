@@ -34,7 +34,7 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
                 var errors = new List<string>();
 
                 var startTime = DateTime.Now;
-                var htmlResult = await _httpService.GetHtmlStructureAsGoogleBot(address, requestTimeout);
+                var htmlResult = await _httpService.GetHtmlStructureAsGoogleBotDesktop(address, requestTimeout);
                 var endTime = DateTime.Now;
 
                 var breadcrumbs = htmlResult.FindNodesByName("autodoc-breadcrumbs").FirstOrDefault();

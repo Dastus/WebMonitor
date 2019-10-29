@@ -28,13 +28,10 @@ namespace Monitor.Application.MonitoringChecks.Decorators
 
             var commandResult = result;           
 
-            if (commandResult.Success)
-            {
-                var prevState = _store.GetCheck(commandResult.CheckModel.Settings.Type);
-                commandResult.CheckModel = new CheckTimeHelper().SetDurations(commandResult.CheckModel, prevState);
+            var prevState = _store.GetCheck(commandResult.CheckModel.Settings.Type);
+            commandResult.CheckModel = new CheckTimeHelper().SetDurations(commandResult.CheckModel, prevState);
 
-                await _store.Save(commandResult.CheckModel);
-            }
+            await _store.Save(commandResult.CheckModel);
 
             sw.Stop();//
             result.CheckModel.State.DiagnosticsInfo += " DataStore: " + sw.ElapsedMilliseconds;

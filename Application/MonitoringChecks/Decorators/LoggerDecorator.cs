@@ -32,7 +32,7 @@ namespace Monitor.Application.MonitoringChecks.Decorators
 
                 var tasks = new Task[] {
                     _logger.SaveLog(result as CommandResult),
-                    _logStash.SaveLog(result as CommandResult)
+                    //_logStash.SaveLog(result as CommandResult)
                 };
 
                 await Task.WhenAll(tasks);

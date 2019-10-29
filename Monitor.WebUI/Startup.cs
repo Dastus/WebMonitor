@@ -73,11 +73,11 @@ namespace Monitor.WebUI
             services.AddMediatR(typeof(HomePageCheckHandler).GetTypeInfo().Assembly);            
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggerDecorator<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandExceptionsDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandResultHandleDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(SignalRDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(NotificationsDecorator<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DataStoreDecorator<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandExceptionsDecorator<,>));
 
             services.Configure<TelegramNotificationSettings>(Configuration.GetSection("TelegramNotificationSettings"));
             services.Configure<LoggerSettings>(Configuration.GetSection("LoggerSettings"));

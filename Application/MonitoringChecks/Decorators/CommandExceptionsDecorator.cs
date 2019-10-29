@@ -19,7 +19,7 @@ namespace Monitor.Application.MonitoringChecks.Decorators
                 return result;
             }
             catch (Exception ex)
-            {
+            { 
                 return new CommandResult
                 {
                     Success = false,
@@ -30,7 +30,7 @@ namespace Monitor.Application.MonitoringChecks.Decorators
                         {
                             Status = StatusesEnum.CRITICAL,
                             Description = "Exception during check execution: " + ex.Message,
-                            LastCheckTime = DateTime.Now
+                            LastCheckTime = DateTime.Now,                            
                         }
                     }
                 };

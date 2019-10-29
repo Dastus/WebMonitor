@@ -19,8 +19,12 @@ namespace Monitor.Infrastructure.Http
     public class HttpRequestService : IHttpRequestService
     {
         private HttpClient _userHttpClient = new HttpClient();
-        private HttpClient _googleBotHttpClient = new HttpClient {
+        private HttpClient _googleBotHttpClientDesktop = new HttpClient {
             DefaultRequestHeaders = { { "User-Agent", "Googlebot/2.1 (+http://www.google.com/bot.html)" } }
+        };
+        private HttpClient _googleBotHttpClientMobile = new HttpClient
+        {
+            DefaultRequestHeaders = { { "User-Agent", "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" } }
         };
 
         /// <summary>Get page HTML structure as Google Bot</summary>
@@ -36,9 +40,20 @@ namespace Monitor.Infrastructure.Http
         }
 
         /// <summary>Get page HTML structure</summary>
-        public async Task<HtmlDocument> GetHtmlStructureAsGoogleBot(string url, TimeSpan timeout)
+        public async Task<HtmlDocument> GetHtmlStructureAsGoogleBotDesktop(string url, TimeSpan timeout)
         {
-            var result = await _googleBotHttpClient.GetAsyncWithTimeout(url, timeout);
+            var result = await _googleBotHttpClientDesktop.GetAsyncWithTimeout(url, timeout);
+            var stream = await result.Content.ReadAsStreamAsync();
+
+            var doc = new HtmlDocument();
+            doc.Load(stream);
+
+            return doc;
+        }
+
+        public async Task<HtmlDocument> GetHtmlStructureAsGoogleBotMobile(string url, TimeSpan timeout)
+        {
+            var result = await _googleBotHttpClientMobile.GetAsyncWithTimeout(url, timeout);
             var stream = await result.Content.ReadAsStreamAsync();
 
             var doc = new HtmlDocument();
@@ -51,7 +66,7 @@ namespace Monitor.Infrastructure.Http
         public async Task<WebPageLoadResult> GetPageLoadResultAsGoogleBot(string url, TimeSpan timeout)
         {
             var startTime = DateTime.Now;
-            var resp = await _googleBotHttpClient.GetAsyncWithTimeout(url, timeout);
+            var resp = await _googleBotHttpClientDesktop.GetAsyncWithTimeout(url, timeout);
             var endTime = DateTime.Now;
 
             return new WebPageLoadResult
@@ -83,7 +98,7 @@ namespace Monitor.Infrastructure.Http
 
         public async Task<HttpResponseMessage> PerformGetRequestAsGoogleBot(string url, TimeSpan timeout, IDictionary<string, string> queryParameters = null)
         {
-            return await _googleBotHttpClient.GetAsyncWithTimeout(url, timeout, queryParameters);
+            return await _googleBotHttpClientDesktop.GetAsyncWithTimeout(url, timeout, queryParameters);
         }
 
         public async Task<HttpResponseMessage> PerformPostRequest(string url, TimeSpan timeout, object requestModel = null)
@@ -93,7 +108,7 @@ namespace Monitor.Infrastructure.Http
 
         public async Task<HttpResponseMessage> PerformPostRequestAsGoogleBot(string url, TimeSpan timeout, object requestModel = null)
         {
-            return await _googleBotHttpClient.PostAsyncWithTimeout(url, requestModel, timeout);
+            return await _googleBotHttpClientDesktop.PostAsyncWithTimeout(url, requestModel, timeout);
         }
     }
 

@@ -4,30 +4,30 @@ using Monitor.Application.MonitoringChecks.Helpers;
 using Monitor.Application.MonitoringChecks.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Monitor.Application.MonitoringChecks.ChecksLogic
+namespace Monitor.Application.MonitoringChecks.ChecksLogic.HTML
 {
-    public class ProductHtmlCheck
+    class LayoutVariantCheck
     {
         private readonly IHttpRequestService _httpService;
 
-        public ProductHtmlCheck(IHttpRequestService httpService)
+        public LayoutVariantCheck(IHttpRequestService httpService)
         {
             _httpService = httpService;
         }
 
-        public async Task<Check> CheckCategoryInfo(CheckSettings settings)
+        public async Task<Check> PerformCheck(CheckSettings settings, bool isMobile = false)
         {
+            var expectedMarker = isMobile ? "MOBILE" : "DESKTOP";
             var result = new Check { Settings = settings };
             result.State.LastCheckTime = DateTime.Now;
             var requestTimeout = TimeSpan.FromSeconds(30);
 
-            string address = new EnvironmentHelper().GetEnvironmentUrl(settings.EnvironmentId) + "/product/filtr-maslyanyj-dvigatelya-lanos-aveo-lacetti-nubira-nexia-pr-vo-knecht-mahle-id-84669-0-170";
+            string address = new EnvironmentHelper().GetEnvironmentUrl(settings.EnvironmentId);
 
             try
             {
@@ -35,41 +35,29 @@ namespace Monitor.Application.MonitoringChecks.ChecksLogic
                 var errors = new List<string>();
 
                 var startTime = DateTime.Now;
-                var htmlResult = await _httpService.GetHtmlStructureAsGoogleBotDesktop(address, requestTimeout);
+                var htmlResult = (isMobile) 
+                    ? await _httpService.GetHtmlStructureAsGoogleBotMobile(address, requestTimeout)
+                    : await _httpService.GetHtmlStructureAsGoogleBotDesktop(address, requestTimeout);
                 var endTime = DateTime.Now;
 
-                var breadcrumbs = htmlResult.FindNodesByName("autodoc-breadcrumbs").FirstOrDefault();
-                if (breadcrumbs == null)
+                var footerMarker = htmlResult.FindNodesByClassName("div","footer__holder").FirstOrDefault()?.FirstChild;
+                if (footerMarker == null)
                 {
-                    errors.Add("breadcrumbs element not found");
+                    errors.Add("footer MOBILE marker not found");
+                }
+                if (footerMarker.InnerText != expectedMarker)
+                {
+                    errors.Add($"Expected footer marker is '{expectedMarker}'. Received is '{footerMarker.InnerText}'");
                 }
 
-                var expectedCrumbs = new List<string> {
-                    "href=\"/\"", //home
-                    "href=\"/category/dvigatel-sistemy-i-komponenty-id1-3\"", //Двигатель, системы и компоненты
-                    "href=\"/category/sistema-smazki-id57-3\"", //Система смазки      
-                    "href=\"/category/maslyanyj-filtr-id170-3\"", //Масляный фильтр
-                };
-
-                var missingCrumbs = new List<string>() as IEnumerable<string>;
-                if (breadcrumbs !=null && !breadcrumbs.InnerHtml.ContainsAll(expectedCrumbs, out missingCrumbs))
+                var appMarker = htmlResult.FindNodesByClassName("div", "wrapper__holder").FirstOrDefault()?.FirstChild;
+                if (appMarker == null)
                 {
-                    errors.Add("Following breadcrumbs aren't found: " + string.Join(", ", missingCrumbs));
+                    errors.Add("app MOBILE marker not found");
                 }
-
-                //check h1
-                var h1 = htmlResult.FindNodesByName("h1").FirstOrDefault();
-                if (h1 != null && h1.InnerHtml != "Фильтр масляный двигателя LANOS, AVEO, LACETTI, NUBIRA, NEXIA (пр-во KNECHT-MAHLE). OC90")
+                if (appMarker.InnerText != expectedMarker)
                 {
-                    errors.Add("h1 differs from expected: " + h1.InnerHtml);
-                }
-                
-                //check price                
-                var price = htmlResult.FindNodesByClassName("span", "product-section__new-price").FirstOrDefault();
-                var isNumber = float.TryParse(price?.InnerHtml, NumberStyles.Any, CultureInfo.InvariantCulture, out var num);
-                if (!isNumber)
-                {
-                    errors.Add("price not found");
+                    errors.Add($"Expected app marker is '{expectedMarker}'. Received is '{footerMarker.InnerText}'");
                 }
 
                 if (errors.Count() > 0)

@@ -40,5 +40,9 @@ namespace Monitor.Application.MonitoringChecks.Models
         ApStoAutodocSettlementsBeta = 35,
         ApiStoAutodocPointsProd = 36,
         ApiStoAutodocPointsBeta = 37,
+        HtmlDesktopProd = 38,
+        HtmlDesktopBeta = 39,
+        HtmlMobileProd = 40,
+        HtmlMobileBeta = 41,
     }
 }
