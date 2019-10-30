@@ -6,6 +6,6 @@ namespace Monitor.Infrastructure.Settings
         public string BotName { get; set; }
         public string BotKey { get; set; }
         public string SendMessageEndpoint { get; set; }
-        public int ChatId { get; set; }
+        public long ChatId { get; set; }
     }
 }
